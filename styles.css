@@ -1,0 +1,157 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  height: 200px;
+  width: 130px;
+  background: white;
+  border-radius: 8px;
+  transition: all 0.3s;
+  cursor: pointer;
+  margin: 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+.card label {
+  width: 100%;
+  text-align: center;
+  padding: 8px;
+  background: grey;
+  color: white;
+}
+
+.card p {
+  width: 100%;
+  text-align: center;
+  padding: 8px;
+  min-height: 50%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: beige;
+  font-size: 12px;
+}
+
+.card.m label {
+  background-color: #a02334;
+}
+.card.s label {
+  background-color: #96ceb4;
+}
+.card.t p {
+  font-size: 16px;
+}
+
+.card:hover {
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+}
+
+#hand {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 232px;
+}
+
+#stage {
+  position: absolute;
+  top: 300px;
+  left: 0;
+  font-size: 24px;
+}
+
+#instruction {
+  position: absolute;
+  bottom: 280px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 24px;
+}
+
+#picked-card {
+  position: absolute;
+  left: 162px;
+  top: 16px;
+}
+
+#pile,
+#discard {
+  position: absolute;
+  top: 16px;
+  height: 200px;
+  width: 130px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  cursor: pointer;
+  margin: 0 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#pile {
+  left: 16px;
+}
+#discard {
+  right: 16px;
+}
+
+#discard.has-cards {
+  background: #ffad60;
+}
+
+.has-cards {
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+#goodEnd,
+#badEnd {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 64px;
+  top: 0;
+  left: 100%;
+  bottom: 0;
+  width: 100%;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#goodEnd {
+  color: green;
+}
+#badEnd {
+  color: red;
+}

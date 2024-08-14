@@ -1,4 +1,4 @@
-import { Card } from './cards';
+import { BenedictionCard, Card } from './cards';
 
 export const maledictionCards: Array<Card> = [
   //   { type: 'm', effect: 'hidden', name: 'Past Weight', desc: 'Add a hidden card to your hand' },
@@ -43,28 +43,17 @@ export const maledictionCards: Array<Card> = [
   //   },
 ];
 
-export const specialsCards: Array<Card> = [
-  { type: 's', effect: 'evasion', name: 'Evasion', desc: 'Discard a card in your hand' },
-  { type: 's', effect: 'protection', name: 'Protection', desc: 'Lower a random card by 2, if 0 discard the card' },
-  {
-    type: 's',
-    effect: 'lucky-switch',
-    name: 'Lucky switch',
-    desc: 'Switch one card from you hand by one on top of the deck',
-  },
-  {
-    type: 's',
-    effect: 'future-vision',
-    name: 'Vision of the future',
-    desc: 'Peak at the next 3 card, you can discard 2 max',
-  },
-  { type: 's', effect: 'dissipation', name: 'Dissipation', desc: 'Remove an active malediction' },
-  { type: 's', effect: 'revelation', name: 'Revelation', desc: 'Reveal a hidden card ans lower it by 2, if 0 discard' },
-  {
-    type: 's',
-    effect: '13th-talisman',
-    name: '13th taslisman',
-    desc: 'Shield you from loosing. Remove all your card',
-  },
-  { type: 's', effect: 'second-breath', name: 'second-breath', desc: 'Cancels the next malediction card' },
+export const benedictionCards: Array<Card> = [
+  new BenedictionCard('Evasion', 'Discard a card in your hand', 'evasion'),
+  new BenedictionCard('Protection', 'Lower a choosen card by 2. If it reaches 0, the card is discarded', 'protection'),
+  new BenedictionCard('Lucky switch', 'Switch one card from you hand by one on top of the pile', 'lucky-switch'),
+  new BenedictionCard('Vision of the future', 'Peak at the next 3 card, you can discard 2 max', 'future-vision'),
+  new BenedictionCard('Dissipation', 'Remove an active malediction', 'dissipation'),
+  new BenedictionCard(
+    'Revelation',
+    'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
+    'revelation',
+  ),
+  new BenedictionCard('13th taslisman', 'Shield you from loosing but remove all of your cards', '13th-talisman'),
+  new BenedictionCard('Second breath', 'Cancels the next malediction card', 'second-breath'),
 ];

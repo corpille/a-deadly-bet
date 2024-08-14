@@ -1,7 +1,7 @@
-import { Card } from './cards';
+import { Card, TreasureCard } from './cards';
 import GameState from './GameState';
 
-export const treasureCards: Array<Card> = generateCards();
+export const treasureCards: Array<TreasureCard> = generateTreasureCards();
 
 const goodEnd = document.getElementById('goodEnd') as HTMLElement;
 const badEnd = document.getElementById('badEnd') as HTMLElement;
@@ -55,10 +55,7 @@ function endGame(end: HTMLElement): void {
   end.style.opacity = '1';
 }
 
-function generateCards(): Array<Card> {
-  const availableCards: Array<Card> = [...Array(7).keys()].map((i) => ({
-    type: 't',
-    val: i + 1,
-  }));
+function generateTreasureCards(): Array<TreasureCard> {
+  const availableCards: Array<TreasureCard> = [...Array(7).keys()].map((i) => new TreasureCard(i + 1));
   return [...availableCards, ...availableCards, ...availableCards, ...availableCards];
 }

@@ -5,18 +5,35 @@ html {
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 * {
   box-sizing: border-box;
 }
 
+#game {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#card-left {
+  position: absolute;
+  top: 232px;
+  left: 16px;
+  width: 130px;
+  text-align: center;
+}
+
 .card {
+  position: absolute;
   background-color: transparent;
   height: 200px;
   width: 130px;
-  margin: 0 16px;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
+  border-radius: 8px;
+  transition: all 0.8s;
 }
 
 .card .inner {
@@ -56,16 +73,13 @@ html {
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
-.card .front:hover {
+/* .card .front:hover {
   box-shadow:
     rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
     rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
-}
+} */
 
 .card .front label {
   width: 100%;
@@ -89,95 +103,59 @@ html {
   font-size: 12px;
   cursor: pointer;
 }
-.card .front.m label {
+.card.m .front label {
   background-color: #a02334;
 }
-.card .front.b label {
+.card.b .front label {
   background-color: #96ceb4;
 }
-.card .front.t p {
+.card.t .front p {
   font-size: 16px;
+}
+.card.b .back {
+  background-color: #606c38;
+  border-color: #283618;
 }
 
 .card .back {
-  background-color: #ffad60;
+  background-color: #dda15e;
   color: white;
   transform: rotateY(180deg);
   border-radius: 8px;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-}
-
-#hand {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 232px;
-}
-
-#stage {
-  position: absolute;
-  top: 300px;
-  left: 0;
-  font-size: 24px;
+  border: 2px solid #bc6c25;
 }
 
 #instruction {
   position: absolute;
-  bottom: 280px;
-  left: 0;
-  right: 0;
+  top: 16px;
+  width: 500px;
+  left: calc(50% - (500px / 2));
   text-align: center;
   font-size: 24px;
 }
 
-#picked-card {
+.benection-hand {
   position: absolute;
-  left: 162px;
-  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
 }
 
-#pile,
-#discard {
-  position: absolute;
-  top: 16px;
+.benection-hand .spot {
+  border: 1px solid black;
   height: 200px;
   width: 130px;
+  margin-right: 16px;
   border-radius: 8px;
-  transition: all 0.3s;
-  cursor: pointer;
-  margin: 0 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-#pile {
-  left: 16px;
-}
-#discard {
-  right: 16px;
-}
-
-#discard.has-cards {
-  background: #ffad60;
-}
-
-.has-cards {
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+.benection-hand .spot:last-child {
+  margin-right: 0;
 }
 
 #goodEnd,
 #badEnd {
-  position: fixed;
+  position: absolute;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -201,7 +179,8 @@ html {
 }
 
 #malediction {
-  position: fixed;
+  position: absolute;
+  z-index: 99;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -211,9 +190,10 @@ html {
   left: 100%;
   bottom: 0;
   width: 100%;
-  z-index: 100;
   opacity: 0;
   transition: opacity 0.3s;
+  color: white;
+  font-size: 24px;
 }
 
 button {
@@ -223,6 +203,6 @@ button {
   text-transform: uppercase;
   background: brown;
   color: white;
-  margin-top: 16px;
+  margin-top: 280px;
   cursor: pointer;
 }

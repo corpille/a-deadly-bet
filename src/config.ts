@@ -19,28 +19,42 @@ export function getMaledictionCards(): MaledictionCard[] {
   ];
 }
 
-export function getBenedictionCards(): BenedictionCard[] {
-  return [
-    new BenedictionCard('Evasion', 'Discard a card in your hand', 'evasion'),
-    new BenedictionCard(
-      'Protection',
-      'Lower a choosen card by 2. If it reaches 0, the card is discarded',
-      'protection',
-    ),
-    new BenedictionCard('Lucky switch', 'Switch one card from you hand by one on top of the pile', 'lucky-switch'),
-    new BenedictionCard('Vision of the future', 'Peak at the next 3 card, you can discard 2 max', 'future-vision'),
-    new BenedictionCard('Dissipation', 'Remove an active malediction', 'dissipation'),
-    new BenedictionCard(
-      'Revelation',
-      'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
-      'revelation',
-    ),
-    new BenedictionCard('13th taslisman', 'Shield you from loosing but remove all of your cards', '13th-talisman'),
-    new BenedictionCard('Second breath', 'Cancels the next malediction card', 'second-breath'),
-  ];
+const benedictions = [
+  { name: 'Evasion', desc: 'Discard a card in your hand', effect: 'evasion' },
+  {
+    name: 'Protection',
+    desc: 'Lower a choosen card by 2. If it reaches 0, the card is discarded',
+    effect: 'protection',
+  },
+  { name: 'Lucky switch', desc: 'Switch one card from you hand by one of the same type', effect: 'lucky-switch' },
+  {
+    name: 'Vision of the future',
+    desc: 'Reveal the first 3 card on the pile choose 1 and discard 2',
+    effect: 'future-vision',
+  },
+  { name: 'Dissipation', desc: 'Remove an active malediction', effect: 'dissipation' },
+  {
+    name: 'Revelation',
+    desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
+    effect: 'revelation',
+  },
+  { name: '13th taslisman', desc: 'Shield you from loosing but remove all of your cards', effect: '13th-talisman' },
+  { name: 'Second breath', desc: 'Cancels the next malediction card', effect: 'second-breath' },
+];
+
+export function getRandomBenediction(): BenedictionCard {
+  //return new BenedictionCard(benedictions[2]);
+  return new BenedictionCard(benedictions[Math.floor(Math.random() * benedictions.length)]);
 }
 
 export function getTreasureCards(): Array<TreasureCard> {
-  const availableCards: Array<TreasureCard> = [...Array(7).keys()].map((i) => new TreasureCard(i + 1));
-  return [...availableCards, ...availableCards, ...availableCards, ...availableCards];
+  const availableCards: Array<TreasureCard> = [];
+  for (let i = 0; i < 4; i++) {
+    // nb set
+    for (let j = 0; j < 7; j++) {
+      // max value
+      availableCards.push(new TreasureCard(i + 1));
+    }
+  }
+  return availableCards;
 }

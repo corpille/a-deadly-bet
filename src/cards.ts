@@ -1,18 +1,42 @@
-import GameState from './GameState';
+let id = 0;
+
+const maxHeight = window.innerHeight;
+const maxWidth = window.innerWidth;
+const cardHeight = 200;
+const cardWidth = 130;
+
+export const positions = {
+  pile: () => ({ top: 16, left: 16 }),
+  benedictionPile: () => ({ top: 16, left: 16 + (cardWidth + 16) }),
+  discard: () => ({ top: 16, left: 16 + (cardWidth + 16) * 2 }),
+  hand: (index: number) => ({ top: maxHeight - cardHeight - 16, left: 16 + (cardWidth + 16) * index }),
+  benedictionHand: (index: number) => ({
+    top: maxHeight - cardHeight - 16,
+    left: maxWidth - (cardWidth + 16) * (3 - index),
+  }),
+  malediction: () => ({ top: maxHeight / 2 - cardHeight / 2, left: maxWidth / 2 - cardWidth / 2 }),
+};
 
 export class BaseCard {
+  id: string;
   type: string;
-  hidden: boolean = false;
+  hidden: boolean = true;
+  listener?: any;
+  pos: { top: number; left: number } = positions.pile();
   canBeDiscarded: boolean = true;
+
+  constructor(type: string) {
+    this.type = type;
+    this.id = `${this.type}-${id++}`;
+  }
 }
 
 export class TreasureCard extends BaseCard {
   val: number;
 
   constructor(val: number) {
-    super();
+    super('t');
     this.val = val;
-    this.type = 't';
   }
 }
 
@@ -22,11 +46,10 @@ export class MaledictionCard extends BaseCard {
   effect: string;
 
   constructor(name: string, desc: string, effect: string) {
-    super();
+    super('m');
     this.name = name;
     this.desc = desc;
     this.effect = effect;
-    this.type = 'm';
   }
 }
 
@@ -36,33 +59,58 @@ export class BenedictionCard extends BaseCard {
   effect: string;
   playable: boolean;
 
-  constructor(name: string, desc: string, effect: string, playable: boolean = true) {
-    super();
-    this.name = name;
-    this.desc = desc;
-    this.effect = effect;
-    this.playable = playable;
-    this.type = 'b';
+  constructor(options: { name: string; desc: string; effect: string }) {
+    super('b');
+    this.name = options.name;
+    this.desc = options.desc;
+    this.effect = options.effect;
   }
 }
 
 export type Card = TreasureCard | MaledictionCard | BenedictionCard;
 
-function createDomCard(card: Card): HTMLElement {
-  const cardEl = document.createElement('div') as HTMLElement;
-  cardEl.classList.add('card');
+export function updateCard(
+  gameEl: HTMLElement,
+  card?: Card,
+  zIndex: number = 1,
+  listener?: any,
+  resetListener: boolean = true,
+): void {
+  if (!card) return;
+  const cardEl = gameEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
+  const positions = card.pos;
+  cardEl.style.zIndex = zIndex.toString();
+  cardEl.style.top = `${positions.top}px`;
+  cardEl.style.left = `${positions.left}px`;
   if (card.hidden) {
     cardEl.classList.add('hidden');
+  } else {
+    cardEl.classList.remove('hidden');
   }
+  if (resetListener && card.listener) {
+    cardEl.removeEventListener('click', card.listener);
+  }
+  if (listener) {
+    card.listener = listener;
+    cardEl.addEventListener('click', card.listener);
+  }
+  const desc = cardEl.querySelector('p') as HTMLElement;
+  desc.innerText = card instanceof TreasureCard ? card.val.toString() : card.desc;
+}
+
+export function createDomCard(card: Card, id: string): HTMLElement {
+  const cardEl = document.createElement('div') as HTMLElement;
+  cardEl.classList.add('card', card.type);
   if (!card.canBeDiscarded) {
     cardEl.classList.add('locked');
   }
+  cardEl.setAttribute('data-id', id);
   const cardInnerEl = document.createElement('div') as HTMLElement;
   cardInnerEl.classList.add('inner');
   const cardBackEl = document.createElement('div') as HTMLElement;
   cardBackEl.classList.add('back');
   const cardFrontEl = document.createElement('div') as HTMLElement;
-  cardFrontEl.classList.add('front', card.type);
+  cardFrontEl.classList.add('front');
 
   const label = document.createElement('label') as HTMLElement;
   label.innerText = card instanceof TreasureCard ? 'Treasure' : card.name;
@@ -74,37 +122,7 @@ function createDomCard(card: Card): HTMLElement {
   cardFrontEl.append(desc);
   cardInnerEl.append(cardFrontEl);
   cardInnerEl.append(cardBackEl);
+
   cardEl.append(cardInnerEl);
   return cardEl;
-}
-
-export function displayCards(el: any, cards: Array<Card>, onClickAction?: any): void {
-  el.innerHTML = '';
-  cards.forEach((card: Card) => {
-    const cardEl = createDomCard(card);
-
-    if (onClickAction) {
-      cardEl.addEventListener('click', onClickAction);
-    }
-    el.appendChild(cardEl);
-  });
-}
-
-export function pickCard(state: GameState, type?: string): Card | undefined {
-  if (type) {
-    return state.cards.findLast((c) => c.type === type);
-  }
-  return state.cards.pop();
-}
-
-export function pickCards(state: GameState, nb: number, type?: string): Array<Card> {
-  // // Cheat
-  // if (nb === 5) {
-  //   const i = state.cards.findIndex((c) => c instanceof BenedictionCard && c.effect === 'lucky-switch');
-  //   console.log(i);
-  //   if (i !== -1) {
-  //     return [...state.cards.splice(i, 1), ...[...Array(nb).keys()].map(() => state.cards.pop() as Card)];
-  //   }
-  // }
-  return [...Array(nb).keys()].map(() => pickCard(state, type) as Card);
 }

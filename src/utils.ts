@@ -17,9 +17,9 @@ export function shuffleArray(arr: Array<any>): void {
   }
 }
 
-export function checkEndGame(state: GameState): boolean {
+export async function checkEndGame(state: GameState): Promise<boolean> {
   if (state.getSum() >= 13) {
-    state.activateLastChance();
+    await state.activateLastChance();
     if (state.getSum() >= 13) {
       displayElement(badEnd);
       return true;
@@ -55,4 +55,10 @@ export function hideElement(end: HTMLElement): void {
 
 export function getRandomIndex(arr: Array<any>): number {
   return Math.floor(Math.random() * arr.length);
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve, ms);
+  });
 }

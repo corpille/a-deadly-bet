@@ -1,5 +1,5 @@
 import { BenedictionCard, Card, createDomCard, positions, MaledictionCard, TreasureCard } from './cards';
-import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex } from './utils';
+import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep } from './utils';
 import { getMaledictionCards, getRandomBenediction, getTreasureCards } from './config';
 
 export enum ActionState {
@@ -121,6 +121,7 @@ export default class GameState {
 
   public refresh(): void {
     this.cardLeftEl.innerText = this.pile.length.toString();
+
     if (this.action === ActionState.discard) {
       this.instructionEl.innerText = `Discard ${this.nbCardToAction} card${this.nbCardToAction > 1 ? 's' : ''}`;
     } else if (this.action === ActionState.choose) {
@@ -133,7 +134,7 @@ export default class GameState {
   }
 
   private displayMalediction(card: MaledictionCard): void {
-    card.pos = positions.malediction();
+    card.pos = positions.center();
     this.currentMalediction = card;
     this.updateCard(card, 100);
     displayElement(this.maledictionEl);
@@ -247,16 +248,16 @@ export default class GameState {
   }
 
   public playMalediction(): void {
-    const index = this.hasBenedictionCard('second-breath');
+    const benedictionIndex = this.findBenedictionCardIndex('second-breath');
     if (!this.currentMalediction) return;
     const dicardIndex = getRandomIndex(this.discardedPile);
 
     this.discardCard(this.currentMalediction);
     hideElement(this.maledictionEl);
-    if (index !== -1) {
+    if (benedictionIndex !== -1) {
       // TODO: play benediction break animation
-      this.discardCard(this.findCardById(this.benedictionHand[index]) as Card);
-      this.benedictionHand.splice(index, 1, 'empty');
+      this.discardCard(this.findCardById(this.benedictionHand[benedictionIndex]) as Card);
+      this.benedictionHand.splice(benedictionIndex, 1, 'empty');
     } else {
       const handIndex = getRandomIndex(this.hand);
 
@@ -332,9 +333,6 @@ export default class GameState {
             this.playMalediction();
           }
           break;
-        case 'quicksand':
-          // TODO : maybe not really usefull nor a malediction
-          break;
       }
     }
     this.setActionState(ActionState.draw);
@@ -354,6 +352,7 @@ export default class GameState {
         break;
       case 'protection':
         chosenCard = (await this.chooseCard(ActionState.chooseTreasure)) as TreasureCard;
+        chosenCard.val -= 2;
         if (chosenCard.val === 0) {
           this.discardCard(chosenCard);
           this.hand.splice(this.hand.indexOf(chosenCard.id), 1);
@@ -399,8 +398,8 @@ export default class GameState {
 
   // Utility functions
 
-  private findCardById(cardId: string): Card | undefined {
-    return this.cards.find(({ id }) => id === cardId);
+  private findCardById(cardId: string): Card {
+    return this.cards.find(({ id }) => id === cardId) as Card;
   }
 
   public setActionState(state: ActionState, nbCard: number = 1): void {
@@ -416,16 +415,25 @@ export default class GameState {
     }, 0);
   }
 
-  private hasBenedictionCard(effect: string): number {
+  private findBenedictionCardIndex(effect: string): number {
     return this.benedictionHand.findIndex((id) => {
       const card = this.findCardById(id) as BenedictionCard;
       return card && card.effect === effect;
     });
   }
 
-  public activateLastChance(): void {
-    if (!this.hasBenedictionCard('13th-talisman')) return;
+  async benedictionBreakAnimation(card: BenedictionCard): Promise<void> {
+    card.pos = positions.center();
+    this.updateCard(card, 1, false);
+    sleep(0.8);
+  }
+
+  public async activateLastChance(): Promise<void> {
+    const index = this.findBenedictionCardIndex('13th-talisman');
+    if (index === -1) return;
+    const card = this.findCardById(this.benedictionHand[index]) as BenedictionCard;
     // TODO: play benediction break animation
+    await this.benedictionBreakAnimation(card);
     [...this.benedictionHand, ...this.hand].forEach((id) => {
       const card = this.findCardById(id) as Card;
       this.discardCard(card);

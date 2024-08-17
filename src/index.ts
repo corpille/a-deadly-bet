@@ -25,12 +25,8 @@ async function start(): Promise<any> {
   state.setActionState(ActionState.draw);
 
   // Loop
-  while (!checkEndGame(state)) {
+  while (!(await checkEndGame(state))) {
     await waitFor(() => state.action === ActionState.draw && state.nbCardToAction === 0);
-    // if (state.activeMaledictions.find((c) => c.effect === 'quicksand')) {
-    //   state.setActionState(ActionState.discard);
-    //   await waitFor(() => state.nbCardToAction === 0);
-    // }
     state.setActionState(ActionState.draw);
     state.refresh();
   }

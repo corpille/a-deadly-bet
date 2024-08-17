@@ -8,14 +8,13 @@ export function getMaledictionCards(): MaledictionCard[] {
     // new MaledictionCard('Poison treasure', 'Add a poisonned treasure to your hand', 'poison-trasure'), // (not coded)  can't be affected by the other special cards
     new MaledictionCard('Rage of the 13th', 'Add 1 to every card of value 3', '13th-rage'),
     new MaledictionCard('False Hope', 'Replace a random card in your hand with one on top of the pile', 'false-hope'),
-    new MaledictionCard('Faith of the gods', 'pick two random card in the pile, the sum must not be 13', 'god-faith'), // (not coded)
+    // new MaledictionCard('Faith of the gods', 'pick two random card in the pile, the sum must not be 13', 'god-faith'), // (not coded)
     new MaledictionCard(
       'Fracture of destiny',
       'Divide one treasure card by two, if 0 replace by one on the pile',
       'destiny-fracture',
     ),
     new MaledictionCard('Echo of the past', 'Pick a random discarded card and add it to your hand', 'past-echo'),
-    // new MaledictionCard('Quicksand', '[Active] Discard one card before you pick one', 'quicksand'),
   ];
 }
 
@@ -32,7 +31,7 @@ const benedictions = [
   //   desc: 'Reveal the first 3 card on the pile choose 1 and discard 2',
   //   effect: 'future-vision',
   // },
-  { name: 'Dissipation', desc: 'Remove an active malediction', effect: 'dissipation' },
+  //{ name: 'Dissipation', desc: 'Remove an active malediction', effect: 'dissipation' },
   {
     name: 'Revelation',
     desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',

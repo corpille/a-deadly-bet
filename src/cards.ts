@@ -14,7 +14,7 @@ export const positions = {
     top: maxHeight - cardHeight - 16,
     left: maxWidth - (cardWidth + 16) * (3 - index),
   }),
-  malediction: () => ({ top: maxHeight / 2 - cardHeight / 2, left: maxWidth / 2 - cardWidth / 2 }),
+  center: () => ({ top: maxHeight / 2 - cardHeight / 2, left: maxWidth / 2 - cardWidth / 2 }),
 };
 
 export class BaseCard {

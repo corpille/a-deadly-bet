@@ -69,35 +69,6 @@ export class BenedictionCard extends BaseCard {
 
 export type Card = TreasureCard | MaledictionCard | BenedictionCard;
 
-export function updateCard(
-  gameEl: HTMLElement,
-  card?: Card,
-  zIndex: number = 1,
-  listener?: any,
-  resetListener: boolean = true,
-): void {
-  if (!card) return;
-  const cardEl = gameEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
-  const positions = card.pos;
-  cardEl.style.zIndex = zIndex.toString();
-  cardEl.style.top = `${positions.top}px`;
-  cardEl.style.left = `${positions.left}px`;
-  if (card.hidden) {
-    cardEl.classList.add('hidden');
-  } else {
-    cardEl.classList.remove('hidden');
-  }
-  if (resetListener && card.listener) {
-    cardEl.removeEventListener('click', card.listener);
-  }
-  if (listener) {
-    card.listener = listener;
-    cardEl.addEventListener('click', card.listener);
-  }
-  const desc = cardEl.querySelector('p') as HTMLElement;
-  desc.innerText = card instanceof TreasureCard ? card.val.toString() : card.desc;
-}
-
 export function createDomCard(card: Card, id: string): HTMLElement {
   const cardEl = document.createElement('div') as HTMLElement;
   cardEl.classList.add('card', card.type);

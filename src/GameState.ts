@@ -1,5 +1,5 @@
-import { BenedictionCard, Card, createDomCard, positions, MaledictionCard, TreasureCard, updateCard } from './cards';
-import { shuffleArray, waitFor, displayElement, hideElement } from './utils';
+import { BenedictionCard, Card, createDomCard, positions, MaledictionCard, TreasureCard } from './cards';
+import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex } from './utils';
 import { getMaledictionCards, getRandomBenediction, getTreasureCards } from './config';
 
 export enum ActionState {
@@ -10,14 +10,15 @@ export enum ActionState {
 }
 
 export default class GameState {
-  cards: Card[] = [];
+  cards: Card[];
   pile: string[];
   hand: string[];
-  benedictionHand: string[] = ['empty', 'empty', 'empty'];
-  discardedPile: string[] = [];
+  benedictionHand: string[];
+  discardedPile: string[];
   action: ActionState;
   nbCardToAction: number = 0;
   currentMalediction?: MaledictionCard;
+  activeMaledictions: MaledictionCard[];
   chosenCardId?: string;
 
   private gameEl = document.getElementById('game') as HTMLElement;
@@ -26,7 +27,11 @@ export default class GameState {
   private maledictionEl = document.getElementById('malediction') as HTMLElement;
 
   constructor() {
-    this.cards.push(...getTreasureCards());
+    this.benedictionHand = ['empty', 'empty', 'empty'];
+    this.discardedPile = [];
+    this.chosenCardId = undefined;
+    this.activeMaledictions = [];
+    this.cards = getTreasureCards();
     shuffleArray(this.cards);
     this.hand = this.cards.slice(this.cards.length - 5).map((card, index) => {
       card.pos = positions.hand(index);
@@ -36,13 +41,23 @@ export default class GameState {
     this.cards.push(...getMaledictionCards());
     this.pile = this.cards.filter((c) => !this.hand.includes(c.id)).map(({ id }) => id);
     shuffleArray(this.pile);
+    // debug
+    // const magicCard = new MaledictionCard(
+    //   'Debug Malediction',
+    //   'Play\'s whatever the dev programmed',
+    //   'destiny-fracture',
+    // );
+    // this.cards.push(magicCard);
+    // this.pile.push(magicCard.id);
+
+    // debug
     const benediction = getRandomBenediction();
     benediction.pos = positions.benedictionPile();
     this.cards.push(benediction);
     this.initCardsVisuals();
   }
 
-  initCardsVisuals(): void {
+  private initCardsVisuals(): void {
     this.cards.forEach((card) => {
       const handIndex = this.hand.indexOf(card.id);
       const pileIndex = this.pile.indexOf(card.id);
@@ -50,20 +65,57 @@ export default class GameState {
 
       let listener;
       if (handIndex !== -1) {
-        listener = () => this.clickHandCard(card as TreasureCard);
+        listener = () => this.onClickHandCard(card as TreasureCard);
       }
       if (pileIndex === this.pile.length - 1) {
-        listener = () => this.clickPile();
+        listener = () => this.onClickPile();
       }
       if (card instanceof BenedictionCard) {
-        listener = () => this.clickBenedictionPile();
+        listener = () => this.onClickBenedictionPile();
       }
       this.gameEl.appendChild(cardEl);
-      updateCard(this.gameEl, card, pileIndex !== -1 ? pileIndex : 1, listener);
+      this.updateCard(card, pileIndex !== -1 ? pileIndex : 1, true, listener);
     });
   }
 
-  refresh(): void {
+  // Listener functions
+
+  private onClickPile(): void {
+    if (this.action !== ActionState.draw) return;
+    this.drawPile();
+  }
+
+  private onClickBenedictionPile(): void {
+    if (this.action !== ActionState.draw) return;
+    this.drawBenediction();
+  }
+
+  private onClickBenediction(id: string): void {
+    const card = this.findCardById(id) as BenedictionCard;
+    if (this.action === ActionState.draw) {
+      this.playBenediction(card);
+    } else if (this.action === ActionState.choose) {
+      this.chosenCardId = card.id;
+      this.nbCardToAction--;
+    }
+  }
+
+  private onClickHandCard(card: TreasureCard): void {
+    const handIndex = this.hand.indexOf(card.id);
+    if (this.action == ActionState.discard && card.canBeDiscarded) {
+      this.hand.splice(handIndex, 1);
+      this.discardCard(card);
+      this.refreshHand();
+    }
+    if ([ActionState.choose, ActionState.chooseTreasure].includes(this.action)) {
+      this.chosenCardId = card.id;
+      this.nbCardToAction--;
+    }
+  }
+
+  // Visual functions
+
+  public refresh(): void {
     this.cardLeftEl.innerText = this.pile.length.toString();
     if (this.action === ActionState.discard) {
       this.instructionEl.innerText = `Discard ${this.nbCardToAction} card${this.nbCardToAction > 1 ? 's' : ''}`;
@@ -76,203 +128,43 @@ export default class GameState {
     }
   }
 
-  findCardById(cardId: string): Card | undefined {
-    return this.cards.find(({ id }) => id === cardId);
+  private displayMalediction(card: MaledictionCard): void {
+    card.pos = positions.malediction();
+    this.currentMalediction = card;
+    this.updateCard(card, 100);
+    displayElement(this.maledictionEl);
   }
 
-  discardCard(card: Card): void {
-    // remove listene of old top discard card
-    updateCard(this.gameEl, this.findCardById(this.discardedPile[this.discardedPile.length - 1]), 1);
-
-    this.discardedPile.push(card.id);
-    card.hidden = true;
-    card.pos = positions.discard();
-    console.log(card, card.pos);
-    updateCard(this.gameEl, card, this.discardedPile.length + 1, () => {
-      console.log('discard click', card.id);
-    });
-    if (this.action == ActionState.discard) {
-      this.nbCardToAction--;
-    }
-    this.refresh();
-  }
-
-  clickBenediction(id: string): void {
-    const card = this.findCardById(id) as BenedictionCard;
-    if (this.action === ActionState.draw) {
-      this.playBenediction(card);
-    } else if (this.action === ActionState.choose) {
-      this.chosenCardId = card.id;
-      this.nbCardToAction--;
-    }
-  }
-
-  clickBenedictionPile(): void {
-    if (this.action !== ActionState.draw) return;
-    this.drawBenediction();
-  }
-
-  drawBenediction(): void {
-    const card = this.cards.find(
-      (c) =>
-        c instanceof BenedictionCard &&
-        this.benedictionHand.indexOf(c.id) === -1 &&
-        this.discardedPile.indexOf(c.id) === -1,
-    ) as BenedictionCard;
-    const index = this.benedictionHand.indexOf('empty');
-    if (index === -1) {
-      // maybe play animation
-      return;
-    }
-    this.benedictionHand.splice(index, 1, card.id);
-    card.hidden = false;
-    card.pos = positions.benedictionHand(index);
-    updateCard(this.gameEl, card, 1, () => this.clickBenediction(card.id));
-
-    const benedictionCard = getRandomBenediction();
-    benedictionCard.pos = positions.benedictionPile();
-    this.cards.push(benedictionCard);
-    const cardEl = createDomCard(benedictionCard, benedictionCard.id);
-    this.gameEl.append(cardEl);
-    updateCard(this.gameEl, benedictionCard, 1, () => this.clickBenedictionPile());
-  }
-
-  clickPile(): void {
-    if (this.action !== ActionState.draw) return;
-    this.drawPile();
-  }
-
-  drawPile(onlyTreasure: boolean = false): void {
-    let cardId;
-    if (onlyTreasure) {
-      const index = this.pile.findLastIndex((id) => this.findCardById(id) instanceof TreasureCard);
-      cardId = this.pile.splice(index, 1)[0];
-    } else {
-      cardId = this.pile.pop();
-      if (!cardId) return;
-    }
-    const card = this.findCardById(cardId) as Card;
-    card.hidden = false;
-    if (card instanceof TreasureCard) {
-      card.pos = positions.hand(this.hand.length);
-      this.hand.push(card.id);
-      updateCard(this.gameEl, card, 1, () => this.clickHandCard(card));
-    } else if (card instanceof MaledictionCard) {
-      card.pos = positions.malediction();
-      this.currentMalediction = card;
-      updateCard(this.gameEl, card, 100);
-      displayElement(this.maledictionEl);
-    }
-    const pileTop = this.cards.find(({ id }) => id === this.pile[this.pile.length - 1]);
-    if (pileTop) {
-      updateCard(this.gameEl, pileTop, this.pile.length, () => this.clickPile());
-    }
-  }
-
-  clickHandCard(card: TreasureCard): void {
-    const handIndex = this.hand.indexOf(card.id);
-    if (this.action == ActionState.discard) {
-      this.hand.splice(handIndex, 1);
-      this.discardCard(card);
-      this.refreshHand();
-    }
-    if ([ActionState.choose, ActionState.chooseTreasure].includes(this.action)) {
-      this.chosenCardId = card.id;
-      this.nbCardToAction--;
-    }
-  }
-
-  refreshHand(): void {
+  private refreshHand(): void {
     this.hand.forEach((id, index) => {
       const card = this.findCardById(id) as TreasureCard;
       card.pos = positions.hand(index);
-      updateCard(this.gameEl, card, 1, undefined, false);
+      this.updateCard(card, 1, false);
     });
   }
 
-  setActionState(state: ActionState, nbCard: number = 1): void {
-    this.nbCardToAction = nbCard;
-    this.action = state;
-    this.refresh();
+  private updateCard(card: Card, zIndex: number = 1, resetListener: boolean = true, listener?: any): void {
+    const cardEl = this.gameEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
+    const positions = card.pos;
+    cardEl.style.zIndex = zIndex.toString();
+    cardEl.style.top = `${positions.top}px`;
+    cardEl.style.left = `${positions.left}px`;
+    cardEl.classList.toggle('locked', !card.canBeDiscarded);
+    cardEl.classList.toggle('hidden', card.hidden);
+    if (resetListener && card.listener) {
+      cardEl.removeEventListener('click', card.listener);
+    }
+    if (listener) {
+      card.listener = listener;
+      cardEl.addEventListener('click', card.listener);
+    }
+    const desc = cardEl.querySelector('p') as HTMLElement;
+    desc.innerText = card instanceof TreasureCard ? card.val.toString() : card.desc;
   }
 
-  getSum(): number {
-    return this.hand.reduce((r, id: string) => {
-      const card = this.cards.find((c) => c.id === id) as TreasureCard;
-      return r + card.val;
-    }, 0);
-  }
+  // Functionality functions
 
-  playMalediction(): void {
-    if (!this.currentMalediction) return;
-    this.discardCard(this.currentMalediction);
-    hideElement(this.maledictionEl);
-    console.log('play malediction');
-    // switch (this.currentMalediction.effect) {
-    //       case 'past-weight':
-    //         const treasureCard = pickCard(this, 't');
-    //         if (treasureCard) {
-    //           treasureCard.hidden = true;
-    //           this.hand.push(treasureCard);
-    //         }
-    //         break;
-    //       case 'growing-shadow':
-    //         if (treasureIndex !== -1) {
-    //           (this.hand[treasureIndex] as TreasureCard).val += 2;
-    //         }
-    //         break;
-    //       case 'unavoidable-pain':
-    //         this.nextTreasureModifier = (c: TreasureCard) => {
-    //           c.canBeDiscarded = false;
-    //           this.nextTreasureModifier = undefined;
-    //         };
-    //         break;
-    //       case 'poison-trasure':
-    //         // TODO
-    //         break;
-    //       case '13th-rage':
-    //         this.hand.forEach((c) => {
-    //           if (c instanceof TreasureCard && c.val === 3) {
-    //             c.val += 1;
-    //           }
-    //         });
-    //         break;
-    //       case 'false-hope':
-    //         this.discardCard(getRandomIndex(this.hand));
-    //         const card = pickCard(this);
-    //         if (card) {
-    //           this.hand.push(card);
-    //         }
-    //         break;
-    //       case 'god-faith':
-    //         // TODO
-    //         break;
-    //       case 'destiny-fracture':
-    //         if (treasureIndex !== -1) {
-    //           const treasure = this.hand[treasureIndex] as TreasureCard;
-    //           treasure.val = Math.floor(treasure.val / 2);
-    //           if (treasure.val === 0) {
-    //             this.discardCard(treasureIndex);
-    //             const card = pickCard(this);
-    //             if (card) {
-    //               this.hand.push(card);
-    //             }
-    //           }
-    //         }
-    //         break;
-    //       case 'past-echo':
-    //         const discardedCard = this.discard.slice(Math.floor(Math.random() * this.discard.length))[0];
-    //         if (discardedCard) {
-    //           this.hand.push(discardedCard);
-    //         }
-    //         break;
-    //       case 'quicksand':
-    //         this.activeMaledictions.push(this.currentMalediction);
-    //         break;
-    //     }
-  }
-
-  async chooseCard(state: ActionState): Promise<TreasureCard | BenedictionCard> {
+  private async chooseCard(state: ActionState): Promise<TreasureCard | BenedictionCard> {
     this.setActionState(state);
     await waitFor(() => {
       return this.nbCardToAction === 0;
@@ -282,7 +174,170 @@ export default class GameState {
     return chosenCard;
   }
 
-  async playBenediction(card: BenedictionCard): Promise<void> {
+  private drawBenediction(): void {
+    const card = this.cards.find(
+      (c) =>
+        c instanceof BenedictionCard &&
+        this.benedictionHand.indexOf(c.id) === -1 &&
+        this.discardedPile.indexOf(c.id) === -1,
+    ) as BenedictionCard;
+    const index = this.benedictionHand.indexOf('empty');
+    if (index === -1) {
+      // TODO: play benediction pile full animation
+      return;
+    }
+    this.benedictionHand.splice(index, 1, card.id);
+    card.hidden = false;
+    card.pos = positions.benedictionHand(index);
+    this.updateCard(card, 1, true, () => this.onClickBenediction(card.id));
+
+    const benedictionCard = getRandomBenediction();
+    benedictionCard.pos = positions.benedictionPile();
+    this.cards.push(benedictionCard);
+    const cardEl = createDomCard(benedictionCard, benedictionCard.id);
+    this.gameEl.append(cardEl);
+    this.updateCard(benedictionCard, 1, true, () => this.onClickBenedictionPile());
+  }
+
+  private drawPile(onlyTreasure: boolean = false, options?: any): void {
+    let cardId;
+    if (onlyTreasure) {
+      const index = this.pile.findLastIndex((id) => this.findCardById(id) instanceof TreasureCard);
+      cardId = this.pile.splice(index, 1)[0];
+    } else {
+      cardId = this.pile.pop();
+      if (!cardId) return;
+    }
+    const card = this.findCardById(cardId) as Card;
+    card.hidden = options?.hidden ?? false;
+    card.canBeDiscarded = options?.canBeDiscarded ?? true;
+    if (card instanceof TreasureCard) {
+      card.pos = positions.hand(this.hand.length);
+      this.hand.push(card.id);
+      this.updateCard(card, 1, true, () => this.onClickHandCard(card));
+      this.nbCardToAction--;
+    } else if (card instanceof MaledictionCard) {
+      this.displayMalediction(card);
+    }
+    const pileTop = this.cards.find(({ id }) => id === this.pile[this.pile.length - 1]);
+    if (pileTop) {
+      this.updateCard(pileTop, this.pile.length, true, () => this.onClickPile());
+    }
+  }
+
+  private discardCard(card: Card): void {
+    // remove old top discard card listener
+    const previousTopPile = this.findCardById(this.discardedPile[this.discardedPile.length - 1]);
+    if (previousTopPile) {
+      this.updateCard(previousTopPile);
+    }
+
+    this.discardedPile.push(card.id);
+    card.hidden = true;
+    card.pos = positions.discard();
+    this.updateCard(card, this.discardedPile.length + 1);
+    if (this.action == ActionState.discard) {
+      this.nbCardToAction--;
+    }
+    this.refresh();
+  }
+
+  public playMalediction(): void {
+    const index = this.hasBenedictionCard('second-breath');
+    if (!this.currentMalediction) return;
+    const dicardIndex = getRandomIndex(this.discardedPile);
+
+    this.discardCard(this.currentMalediction);
+    hideElement(this.maledictionEl);
+    if (index !== -1) {
+      // TODO: play benediction break animation
+      this.discardCard(this.findCardById(this.benedictionHand[index]) as Card);
+      this.benedictionHand.splice(index, 1, 'empty');
+    } else {
+      const handIndex = getRandomIndex(this.hand);
+
+      switch (this.currentMalediction.effect) {
+        case 'past-weight':
+          this.drawPile(true, { hidden: true });
+          break;
+        case 'growing-shadow':
+          if (handIndex === -1) return;
+          const card = this.findCardById(this.hand[handIndex]) as TreasureCard;
+          card.val += 2;
+          // TODO: play value change animation
+          this.updateCard(card, 1, false);
+          break;
+        case 'unavoidable-pain':
+          this.drawPile(true, { canBeDiscarded: false });
+          break;
+        case 'poison-trasure':
+          // TODO : maybe
+          break;
+        case '13th-rage':
+          this.hand.forEach((id) => {
+            const card = this.findCardById(id) as TreasureCard;
+            if (card.val === 3) {
+              card.val += 1;
+            }
+          });
+          this.refreshHand();
+          break;
+        case 'false-hope':
+          if (handIndex === -1) return;
+          this.discardCard(this.findCardById(this.hand[handIndex]) as TreasureCard);
+          this.hand.splice(handIndex, 1);
+          this.refreshHand();
+          this.drawPile();
+          break;
+        case 'god-faith':
+          // TODO: implement preview mode
+          break;
+        case 'destiny-fracture':
+          if (handIndex === -1) return;
+          const fractureCard = this.findCardById(this.hand[handIndex]) as TreasureCard;
+          fractureCard.val = Math.floor(fractureCard.val / 2);
+          // TODO: play value change animation
+          this.updateCard(fractureCard, 1, false);
+          if (fractureCard.val === 0) {
+            this.discardCard(fractureCard);
+            this.hand.splice(handIndex, 1);
+            this.refreshHand();
+            this.drawPile();
+          }
+          break;
+        case 'past-echo':
+          if (dicardIndex === -1) return;
+          const discardedCard = this.findCardById(this.discardedPile[dicardIndex]) as Card;
+          this.discardedPile.splice(dicardIndex, 1);
+          discardedCard.hidden = false;
+          if (discardedCard instanceof TreasureCard) {
+            discardedCard.pos = positions.hand(this.hand.length);
+            this.hand.push(discardedCard.id);
+            this.updateCard(discardedCard, 1, true, () => this.onClickHandCard(card));
+          } else if (discardedCard instanceof BenedictionCard) {
+            const benedictionIndex = this.benedictionHand.indexOf('empty');
+            if (benedictionIndex === -1) {
+              // TODO: play benediction pile full animation
+              return;
+            }
+            this.benedictionHand.splice(benedictionIndex, 1, discardedCard.id);
+            discardedCard.pos = positions.benedictionHand(benedictionIndex);
+            this.updateCard(discardedCard, 1, true, () => this.onClickBenediction(card.id));
+          } else {
+            this.displayMalediction(discardedCard);
+            this.playMalediction();
+          }
+          break;
+        case 'quicksand':
+          // TODO : maybe not really usefull nor a malediction
+          break;
+      }
+    }
+    this.setActionState(ActionState.draw);
+    this.nbCardToAction--;
+  }
+
+  private async playBenediction(card: BenedictionCard): Promise<void> {
     this.discardCard(card);
     const index = this.benedictionHand.indexOf(card.id);
     this.benedictionHand.splice(index, 1, 'empty');
@@ -300,7 +355,7 @@ export default class GameState {
           this.hand.splice(this.hand.indexOf(chosenCard.id), 1);
           this.refreshHand();
         } else {
-          updateCard(this.gameEl, chosenCard, 1, undefined, false);
+          this.updateCard(chosenCard, 1, false);
         }
         break;
       case 'lucky-switch':
@@ -318,28 +373,60 @@ export default class GameState {
           this.drawPile(true);
         }
         break;
-      /* case 'future-vision':
-        const previewCards = pickCards(this, 3);
-        this.showPreview(previewCards);
-        this.setActionState(ActionState.choose);
-        waitFor(() => this.chosenCard !== -1);
-        this.hand.push(previewCards.splice(this.chosenCard, 1)[0]);
-        this.discard.push(...previewCards);
+      case 'future-vision':
+        // TODO: implement preview mode
         break;
       case 'dissipation':
         if (this.activeMaledictions.length) {
           const card = this.activeMaledictions.splice(getRandomIndex(this.activeMaledictions), 1)[0];
-          this.discard.push(card);
+          this.discardCard(card);
         }
         break;
       case 'revelation':
-        const hiddenCardIndex = this.hand.findIndex((c) => c.hidden);
-        this.hand[hiddenCardIndex].hidden = false;
+        const card = this.cards.find((c) => this.hand.includes(c.id) && c.hidden);
+        if (card) {
+          card.hidden = false;
+          this.updateCard(card, 1, false);
+        }
         break;
-      case 'second-breath':
-        // TODO
-        break;*/
     }
     this.setActionState(ActionState.draw);
+  }
+
+  // Utility functions
+
+  private findCardById(cardId: string): Card | undefined {
+    return this.cards.find(({ id }) => id === cardId);
+  }
+
+  public setActionState(state: ActionState, nbCard: number = 1): void {
+    this.nbCardToAction = nbCard;
+    this.action = state;
+    this.refresh();
+  }
+
+  public getSum(): number {
+    return this.hand.reduce((r, id: string) => {
+      const card = this.findCardById(id) as TreasureCard;
+      return r + card.val;
+    }, 0);
+  }
+
+  private hasBenedictionCard(effect: string): number {
+    return this.benedictionHand.findIndex((id) => {
+      const card = this.findCardById(id) as BenedictionCard;
+      return card && card.effect === effect;
+    });
+  }
+
+  public activateLastChance(): void {
+    if (!this.hasBenedictionCard('13th-talisman')) return;
+    // TODO: play benediction break animation
+    [...this.benedictionHand, ...this.hand].forEach((id) => {
+      const card = this.findCardById(id) as Card;
+      this.discardCard(card);
+    });
+    this.benedictionHand = [];
+    this.hand = [];
   }
 }

@@ -191,7 +191,7 @@ html {
   bottom: 0;
   width: 100%;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s 0.8s;
   color: white;
   font-size: 24px;
 }

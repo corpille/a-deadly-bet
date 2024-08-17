@@ -4,12 +4,7 @@ import GameState, { ActionState } from './GameState';
 let state: GameState;
 
 (document.getElementById('replay') as HTMLElement).addEventListener('click', start);
-(document.getElementById('play-malediction') as HTMLElement).addEventListener('click', () => {
-  // if (state.currentBenediction?.effect === 'second-breath') {
-  //   return;
-  // }
-  state.playMalediction();
-});
+(document.getElementById('play-malediction') as HTMLElement).addEventListener('click', () => state.playMalediction());
 
 function reset(): void {
   state = new GameState();
@@ -17,9 +12,9 @@ function reset(): void {
 }
 
 async function start(): Promise<any> {
-  // init
+  // init game
   reset();
-  // First draw
+  // Decision discard
   state.setActionState(ActionState.discard, 3);
   await waitFor(() => state.nbCardToAction === 0);
   state.setActionState(ActionState.draw);

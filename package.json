@@ -11,16 +11,16 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "js13k-vite-plugins": "0.1.7",
-    "@typescript-eslint/eslint-plugin": "6.4.0",
-    "@typescript-eslint/parser": "6.4.0",
-    "eslint": "8.47.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-prettier": "5.0.0",
-    "prettier": "3.0.2",
-    "terser": "5.19.2",
-    "typescript": "5.1.6",
-    "vite": "4.4.9"
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/parser": "^8.1.0",
+    "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "js13k-vite-plugins": "^0.3.4",
+    "prettier": "^3.3.3",
+    "terser": "^5.31.6",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1"
   },
   "prettier": {
     "printWidth": 120,

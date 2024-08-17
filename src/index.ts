@@ -35,5 +35,3 @@ async function start(): Promise<any> {
     state.refresh();
   }
 }
-
-// start();

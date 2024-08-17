@@ -18,10 +18,8 @@ export function shuffleArray(arr: Array<any>): void {
 }
 
 export function checkEndGame(state: GameState): boolean {
-  console.log('sum', state.getSum());
   if (state.getSum() >= 13) {
     state.activateLastChance();
-    console.log(state.getSum());
     if (state.getSum() >= 13) {
       displayElement(badEnd);
       return true;

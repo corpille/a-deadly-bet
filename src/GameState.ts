@@ -21,7 +21,7 @@ export default class GameState {
   activeMaledictions: MaledictionCard[];
   chosenCardId?: string;
 
-  private gameEl = document.getElementById('game') as HTMLElement;
+  private boardEl = document.getElementById('board') as HTMLElement;
   private cardLeftEl = document.querySelector('#card-left span') as HTMLElement;
   private instructionEl = document.getElementById('instruction') as HTMLElement;
   private maledictionEl = document.getElementById('malediction') as HTMLElement;
@@ -55,6 +55,10 @@ export default class GameState {
     benediction.pos = positions.benedictionPile();
     this.cards.push(benediction);
     this.initCardsVisuals();
+    // TODO: de-uglify
+    this.drawBenediction();
+    this.drawBenediction();
+    this.drawBenediction();
   }
 
   private initCardsVisuals(): void {
@@ -73,7 +77,7 @@ export default class GameState {
       if (card instanceof BenedictionCard) {
         listener = () => this.onClickBenedictionPile();
       }
-      this.gameEl.appendChild(cardEl);
+      this.boardEl.appendChild(cardEl);
       this.updateCard(card, pileIndex !== -1 ? pileIndex : 1, true, listener);
     });
   }
@@ -144,7 +148,7 @@ export default class GameState {
   }
 
   private updateCard(card: Card, zIndex: number = 1, resetListener: boolean = true, listener?: any): void {
-    const cardEl = this.gameEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
+    const cardEl = this.boardEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
     const positions = card.pos;
     cardEl.style.zIndex = zIndex.toString();
     cardEl.style.top = `${positions.top}px`;
@@ -195,7 +199,7 @@ export default class GameState {
     benedictionCard.pos = positions.benedictionPile();
     this.cards.push(benedictionCard);
     const cardEl = createDomCard(benedictionCard, benedictionCard.id);
-    this.gameEl.append(cardEl);
+    this.boardEl.append(cardEl);
     this.updateCard(benedictionCard, 1, true, () => this.onClickBenedictionPile());
   }
 

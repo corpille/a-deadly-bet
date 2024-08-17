@@ -12,7 +12,32 @@ html {
   box-sizing: border-box;
 }
 
+#menu {
+  background-color: #3a3a3a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+#menu p {
+  text-align: center;
+}
+
 #game {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: none;
+  background-color: #3a3a3a;
+  color: white;
+}
+
+#board {
   position: relative;
   height: 100%;
   width: 100%;
@@ -195,6 +220,9 @@ html {
   color: white;
   font-size: 24px;
 }
+#malediction button {
+  margin-top: 280px;
+}
 
 button {
   border: none;
@@ -203,6 +231,11 @@ button {
   text-transform: uppercase;
   background: brown;
   color: white;
-  margin-top: 280px;
+  margin-top: 16px;
   cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background: rgb(185, 47, 47);
 }

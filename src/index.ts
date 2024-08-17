@@ -3,6 +3,11 @@ import GameState, { ActionState } from './GameState';
 
 let state: GameState;
 
+(document.getElementById('play') as HTMLElement).addEventListener('click', () => {
+  (document.getElementById('menu') as HTMLElement).style.display = 'none';
+  (document.getElementById('game') as HTMLElement).style.display = 'block';
+  start();
+});
 (document.getElementById('replay') as HTMLElement).addEventListener('click', start);
 (document.getElementById('play-malediction') as HTMLElement).addEventListener('click', () => state.playMalediction());
 
@@ -31,4 +36,4 @@ async function start(): Promise<any> {
   }
 }
 
-start();
+// start();

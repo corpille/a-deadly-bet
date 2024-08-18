@@ -130,6 +130,7 @@ html {
   background: beige;
   font-size: 12px;
   cursor: pointer;
+  transition: all 0.3s;
 }
 .card.m .front label {
   background-color: #a02334;

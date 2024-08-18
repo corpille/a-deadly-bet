@@ -116,8 +116,8 @@ export default class GameState {
   private onClickHandCard(card: TreasureCard): void {
     const handIndex = this.hand.indexOf(card.id);
     if (this.action == ActionState.discard && card.canBeDiscarded) {
-      this.hand.splice(handIndex, 1);
       this.discardCard(card);
+      this.hand.splice(handIndex, 1);
       this.refreshHand();
     }
     if ([ActionState.choose, ActionState.chooseTreasure].includes(this.action)) {
@@ -193,9 +193,9 @@ export default class GameState {
 
   async playValueChangeAnimation(cardId: string): Promise<void> {
     const valEl = this.boardEl.querySelector(`[data-id="${cardId}"] p`) as HTMLElement;
-    valEl.style.fontSize = '32px';
+    valEl.style.fontSize = '42px';
     await sleep(600);
-    valEl.style.fontSize = '16px';
+    valEl.style.fontSize = '24px';
   }
 
   // Functionality functions
@@ -275,7 +275,7 @@ export default class GameState {
   }
 
   public async playMalediction(): Promise<void> {
-    const benedictionIndex = this.findBenedictionCardIndex('second-breath');
+    const benedictionIndex = this.findBenedictionCardIndex('13th-talisman');
     if (!this.currentMalediction) return;
     const dicardIndex = this.getRandomTreasureFromDiscardPile();
 
@@ -343,7 +343,7 @@ export default class GameState {
           discardedCard.hidden = false;
           discardedCard.pos = positions.hand(this.hand.length);
           this.hand.push(discardedCard.id);
-          this.updateCard(discardedCard, 1, true, () => this.onClickHandCard(card));
+          this.updateCard(discardedCard, 1, true, () => this.onClickHandCard(discardedCard));
           break;
       }
     }
@@ -352,6 +352,7 @@ export default class GameState {
   }
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
+    if (['second-wind', '13th-talisman'].includes(card.effect)) return;
     card.pos = positions.center();
     this.updateCard(card);
     switch (card.effect) {
@@ -376,15 +377,12 @@ export default class GameState {
         const chosenCard = await this.chooseCard(ActionState.choose);
         this.discardCard(chosenCard);
         if (chosenCard instanceof TreasureCard) {
-          this.hand.splice(this.hand.indexOf(chosenCard.id));
+          this.hand.splice(this.hand.indexOf(chosenCard.id), 1);
           this.refreshHand();
+          this.drawPile(true);
         } else {
           this.benedictionHand.splice(this.benedictionHand.indexOf(chosenCard.id), 1, 'empty');
-        }
-        if (chosenCard instanceof BenedictionCard) {
           this.drawBenediction();
-        } else {
-          this.drawPile(true);
         }
         break;
       case 'future-vision':
@@ -453,7 +451,7 @@ export default class GameState {
   }
 
   public async activateLastChance(): Promise<void> {
-    const index = this.findBenedictionCardIndex('13th-talisman');
+    const index = this.findBenedictionCardIndex('second-wind');
     if (index === -1) return;
     const card = this.cardById[this.benedictionHand[index]] as BenedictionCard;
     await this.playBenedictionUseAnimation(card);

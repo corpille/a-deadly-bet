@@ -1,3 +1,13 @@
+
+
+:root {
+  
+  --bg: #342840;
+  --red: #B3515E;
+  --green: #8DB962;
+  --gold: #fecc16;
+}
+
 body,
 html {
   padding: 0;
@@ -6,14 +16,16 @@ html {
   width: 100%;
   position: relative;
   overflow: hidden;
+  user-select: none;;
 }
 
 * {
   box-sizing: border-box;
+  font-family: 'Courier New';
 }
 
 #menu {
-  background-color: #3a3a3a;
+  background-color: var(--bg);
   color: white;
   display: flex;
   flex-direction: column;
@@ -22,9 +34,13 @@ html {
   height: 100%;
   width: 100%;
 }
+#menu h1 {
+  font-size: 64px;
+}
 
 #menu p {
   text-align: center;
+  font-size: 24px;
 }
 
 #game {
@@ -33,7 +49,7 @@ html {
   position: relative;
   overflow: hidden;
   display: none;
-  background-color: #3a3a3a;
+  background-color: var(--bg);
   color: white;
 }
 
@@ -49,13 +65,12 @@ html {
   left: 16px;
   width: 130px;
   text-align: center;
+  font-size: 16px;
 }
 
 .card {
   position: absolute;
   background-color: transparent;
-  height: 200px;
-  width: 130px;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
   border-radius: 8px;
   transition:
@@ -77,7 +92,7 @@ html {
 }
 
 .card.locked .front {
-  border: 1px solid red;
+  border: 2px solid var(--red);
 }
 
 .card .front,
@@ -91,7 +106,8 @@ html {
 
 /* Style the front side (fallback if image is missing) */
 .card .front {
-  background-color: white;
+  /* background-color: white; */
+  background-image: url('/assets/card.webp');
   color: black;
   border-radius: 8px;
   display: flex;
@@ -103,19 +119,16 @@ html {
   transition: all 0.3s;
 }
 
-/* .card .front:hover {
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
-} */
-
 .card .front label {
+  margin-top: 12px;
   width: 100%;
   text-align: center;
-  padding: 8px;
-  background: grey;
   color: white;
   cursor: pointer;
+  color: var(--gold);
+  font-size: 16px;
+  padding: 0 16px;
+  text-transform: uppercase;
 }
 
 .card .front p {
@@ -127,31 +140,30 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: beige;
+  color: white;
   font-size: 12px;
+  padding: 0 16px 16px 16px;
   cursor: pointer;
   transition: all 0.3s;
 }
 .card.m .front label {
-  background-color: #a02334;
+ color: var(--red);
 }
 .card.b .front label {
-  background-color: #96ceb4;
+ color:var(--green);
 }
 .card.t .front p {
-  font-size: 16px;
-}
-.card.b .back {
-  background-color: #606c38;
-  border-color: #283618;
+  font-size: 24px;
 }
 
 .card .back {
-  background-color: #dda15e;
+  background-image: url('/assets/card-bg.webp');
   color: white;
   transform: rotateY(180deg);
   border-radius: 8px;
-  border: 2px solid #bc6c25;
+}
+.card.b .back {
+  background-image: url('/assets/card-bg-ben.webp');
 }
 
 #instruction {
@@ -160,7 +172,7 @@ html {
   width: 500px;
   left: calc(50% - (500px / 2));
   text-align: center;
-  font-size: 24px;
+  font-size: 32px;
 }
 
 #goodEnd,
@@ -218,6 +230,7 @@ button {
   color: white;
   margin-top: 16px;
   cursor: pointer;
+  font-size: 24px;
   transition: all 0.3s;
 }
 

@@ -77,6 +77,8 @@ export function createDomCard(card: Card, id: string): HTMLElement {
     cardEl.classList.add('locked');
   }
   cardEl.setAttribute('data-id', id);
+  cardEl.style.height = `${cardHeight}px`;
+  cardEl.style.width = `${cardWidth}px`;
   const cardInnerEl = document.createElement('div') as HTMLElement;
   cardInnerEl.classList.add('inner');
   const cardBackEl = document.createElement('div') as HTMLElement;
@@ -138,8 +140,8 @@ const benedictions = [
     desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
     effect: 'revelation',
   },
-  { name: '13th taslisman', desc: 'Shield you from loosing but remove all of your cards', effect: '13th-talisman' },
-  { name: 'Second breath', desc: 'Cancels the next malediction card', effect: 'second-breath' },
+  { name: 'Second wind', desc: 'Shield you from loosing but remove all of your cards', effect: 'second-wind' },
+  //{ name: '13th taslisman', desc: 'Cancels the next malediction card', effect: '13th-talisman' },
 ];
 
 export function getRandomBenediction(benedictionHand: string[], cardByid: { [id: string]: Card }): BenedictionCard {

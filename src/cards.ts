@@ -160,7 +160,7 @@ export function getTreasureCards(): Array<TreasureCard> {
     // nb set
     for (let j = 0; j < 7; j++) {
       // max value
-      availableCards.push(new TreasureCard(i + 1));
+      availableCards.push(new TreasureCard(j + 1));
     }
   }
   return availableCards;

@@ -43,7 +43,7 @@ html {
   width: 100%;
 }
 
-#card-left {
+#card-remaining {
   position: absolute;
   top: 232px;
   left: 16px;
@@ -58,7 +58,10 @@ html {
   width: 130px;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
   border-radius: 8px;
-  transition: all 0.8s;
+  transition:
+    top 0.8s,
+    left 0.8s,
+    transform 0.2s;
 }
 
 .card .inner {
@@ -157,25 +160,6 @@ html {
   left: calc(50% - (500px / 2));
   text-align: center;
   font-size: 24px;
-}
-
-.benection-hand {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  display: flex;
-}
-
-.benection-hand .spot {
-  border: 1px solid black;
-  height: 200px;
-  width: 130px;
-  margin-right: 16px;
-  border-radius: 8px;
-}
-
-.benection-hand .spot:last-child {
-  margin-right: 0;
 }
 
 #goodEnd,

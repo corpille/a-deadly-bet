@@ -2,7 +2,7 @@
   --bg: #342840;
   --red: #b3515e;
   --green: #8db962;
-  --gold: #fecc16;
+  --gold: #9b7d4b;
 }
 
 body,
@@ -88,8 +88,12 @@ html {
   transform: rotateY(180deg);
 }
 
-.card.locked .front {
-  border: 2px solid var(--red);
+.card.locked .front::after {
+  display: block;
+}
+
+.card.discarded {
+  filter: grayscale(60%);
 }
 
 .card .front,
@@ -113,6 +117,7 @@ html {
   align-items: center;
   overflow: hidden;
   cursor: pointer;
+  font-weight: bold;
   transition: all 0.3s;
 }
 
@@ -152,6 +157,16 @@ html {
 }
 .card.t .front p {
   font-size: 24px;
+}
+
+.card .front::after {
+  content: '';
+  position: absolute;
+  display: none;
+  height: 100%;
+  width: 100%;
+  background-image: url('/assets/lock.webp');
+  top: 0;
 }
 
 .card .back {

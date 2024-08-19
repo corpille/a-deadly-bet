@@ -119,8 +119,9 @@ export default class GameState {
   }
 
   private onClickHandCard(card: TreasureCard): void {
+    if (card.locked) return;
     const handIndex = this.hand.indexOf(card.id);
-    if (this.action == ActionState.discard && card.canBeDiscarded) {
+    if (this.action == ActionState.discard) {
       this.discardCard(card);
       this.hand.splice(handIndex, 1);
       this.refreshHand();
@@ -180,7 +181,7 @@ export default class GameState {
     if (!cardId) return;
     const card = this.cardById[cardId];
     card.hidden = options?.hidden ?? false;
-    card.canBeDiscarded = options?.canBeDiscarded ?? true;
+    card.locked = options?.locked ?? false;
     if (card instanceof TreasureCard) {
       card.pos = positions.hand(this.hand.length);
       this.hand.push(card.id);
@@ -203,8 +204,10 @@ export default class GameState {
 
     this.discardedPile.push(card.id);
     card.hidden = true;
+    card.locked = false;
     card.pos = positions.discard();
-    this.updateCard(card, this.discardedPile.length + 1);
+    const cardEl = this.updateCard(card, this.discardedPile.length + 1);
+    cardEl.classList.add("discarded");
     if (this.action == ActionState.discard) {
       this.nbCardToAction--;
     }
@@ -231,7 +234,7 @@ export default class GameState {
         await this.playValueChangeAnimation(card.id);
         break;
       case 'unavoidable-pain':
-        this.drawPile(true, { canBeDiscarded: false });
+        this.drawPile(true, { locked: true });
         break;
       case '13th-rage':
         this.hand.forEach((id) => {
@@ -269,7 +272,8 @@ export default class GameState {
         discardedCard.hidden = false;
         discardedCard.pos = positions.hand(this.hand.length);
         this.hand.push(discardedCard.id);
-        this.updateCard(discardedCard, 1, true, () => this.onClickHandCard(discardedCard));
+        const cardEl = this.updateCard(discardedCard, 1, true, () => this.onClickHandCard(discardedCard));
+        cardEl.classList.remove("discarded");
         break;
     }
     this.setActionState(ActionState.draw);
@@ -450,7 +454,7 @@ export default class GameState {
     cardEl.style.zIndex = zIndex.toString();
     cardEl.style.top = `${positions.top}px`;
     cardEl.style.left = `${positions.left}px`;
-    cardEl.classList.toggle('locked', !card.canBeDiscarded);
+    cardEl.classList.toggle('locked', card.locked);
     cardEl.classList.toggle('hidden', card.hidden);
     if (resetListener && card.listener) {
       cardEl.removeEventListener('click', card.listener);

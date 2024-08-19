@@ -22,7 +22,7 @@ export class BaseCard {
   listener?: any;
   posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
-  canBeDiscarded: boolean = true;
+  locked: boolean = false;
   val?: number;
 
   constructor(type: string) {
@@ -73,7 +73,7 @@ export type Card = TreasureCard | MaledictionCard | BenedictionCard;
 export function createDomCard(card: Card, id: string): HTMLElement {
   const cardEl = document.createElement('div') as HTMLElement;
   cardEl.classList.add('card', card.type);
-  if (!card.canBeDiscarded) {
+  if (!card.locked) {
     cardEl.classList.add('locked');
   }
   cardEl.setAttribute('data-id', id);
@@ -105,7 +105,7 @@ export function getMaledictionCards(): MaledictionCard[] {
   return [
     new MaledictionCard('Past Weight', 'Add a hidden treasure from the pile to your hand', 'past-weight'),
     new MaledictionCard('Growing shadow', 'Add 2 points to one of the treasure card in your hand', 'growing-shadow'),
-    new MaledictionCard('Unavoidable pain', "Pick a treasure card that isn't affected by Evasion", 'unavoidable-pain'),
+    new MaledictionCard('Unavoidable pain', "Pick a treasure card that is locked", 'unavoidable-pain'),
     new MaledictionCard('Rage of the 13th', 'Add 1 to every card of value 3', '13th-rage'),
     new MaledictionCard('False Hope', 'Replace a random card in your hand with one on top of the pile', 'false-hope'),
     new MaledictionCard(

@@ -2,6 +2,9 @@ import { waitFor, resetEndState, checkEndGame } from './utils';
 import GameState, { ActionState } from './GameState';
 
 let state: GameState;
+window.addEventListener('resize', () => {
+  state.refreshAll();
+});
 
 (document.getElementById('play') as HTMLElement).addEventListener('click', () => {
   (document.getElementById('menu') as HTMLElement).style.display = 'none';
@@ -28,6 +31,6 @@ async function start(): Promise<any> {
   while (!(await checkEndGame(state))) {
     await waitFor(() => state.action === ActionState.draw && state.nbCardToAction === 0);
     state.setActionState(ActionState.draw);
-    state.refresh();
+    state.refreshInterface();
   }
 }

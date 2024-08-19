@@ -1,21 +1,18 @@
-let id = 0;
+import { cardHeight, cardWidth, maxHeight, maxWidth, NB_BENEDICTION_CARD } from './config';
 
-const maxHeight = window.innerHeight;
-const maxWidth = window.innerWidth;
-const cardHeight = 200;
-const cardWidth = 130;
+let id = 0;
 
 export const positions = {
   pile: () => ({ top: 16, left: 16 }),
   benedictionPile: () => ({ top: 16, left: 16 + (cardWidth + 16) }),
   discard: () => ({ top: 16, left: 16 + (cardWidth + 16) * 2 }),
-  hand: (index: number) => ({ top: maxHeight - cardHeight - 16, left: 16 + (cardWidth + 16) * index }),
+  hand: (index: number) => ({ top: maxHeight() - cardHeight - 16, left: 16 + (cardWidth + 16) * index }),
   benedictionHand: (index: number) => ({
-    top: maxHeight - cardHeight - 16,
-    left: maxWidth - (cardWidth + 16) * (3 - index),
+    top: maxHeight() - cardHeight - 16,
+    left: maxWidth() - (cardWidth + 16) * (NB_BENEDICTION_CARD - index),
   }),
-  center: () => ({ top: maxHeight / 2 - cardHeight / 2, left: maxWidth / 2 - cardWidth / 2 }),
-  activeBenediction: () => ({ top: 16, left: maxWidth - (cardWidth + 16) }),
+  center: () => ({ top: maxHeight() / 2 - cardHeight / 2, left: maxWidth() / 2 - cardWidth / 2 }),
+  activeBenediction: () => ({ top: 16, left: maxWidth() - (cardWidth + 16) }),
 };
 
 export class BaseCard {
@@ -23,6 +20,7 @@ export class BaseCard {
   type: string;
   hidden: boolean = true;
   listener?: any;
+  posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
   canBeDiscarded: boolean = true;
 
@@ -105,10 +103,9 @@ export function getMaledictionCards(): MaledictionCard[] {
   return [
     new MaledictionCard('Past Weight', 'Add a hidden treasure from the pile to your hand', 'past-weight'),
     new MaledictionCard('Growing shadow', 'Add 2 points to one of the treasure card in your hand', 'growing-shadow'),
-    new MaledictionCard('Unavoidable pain', "Pick a treasure card that can't be discarded", 'unavoidable-pain'),
+    new MaledictionCard('Unavoidable pain', "Pick a treasure card that isn't affected by Evasion", 'unavoidable-pain'),
     new MaledictionCard('Rage of the 13th', 'Add 1 to every card of value 3', '13th-rage'),
     new MaledictionCard('False Hope', 'Replace a random card in your hand with one on top of the pile', 'false-hope'),
-    // new MaledictionCard('Faith of the gods', 'pick two random card in the pile, the sum must not be 13', 'god-faith'),
     new MaledictionCard(
       'Fracture of destiny',
       'Divide one treasure card by two, if 0 replace by one on the pile',
@@ -123,13 +120,19 @@ export function getMaledictionCards(): MaledictionCard[] {
 }
 
 const benedictions = [
-  { name: 'Evasion', desc: 'Discard a card in your hand', effect: 'evasion' },
+  { name: 'Evasion', desc: 'Discard a card in your hand', effect: 'evasion', weight: 4 },
   {
     name: 'Protection',
     desc: 'Lower a choosen card by 2. If it reaches 0, the card is discarded',
     effect: 'protection',
+    weight: 1,
   },
-  { name: 'Lucky switch', desc: 'Switch one card from you hand by one of the same type', effect: 'lucky-switch' },
+  {
+    name: 'Lucky switch',
+    desc: 'Switch one card from you hand by one of the same type',
+    effect: 'lucky-switch',
+    weight: 2,
+  },
   // {
   //   name: 'Vision of the future',
   //   desc: 'Reveal the first 3 card on the pile choose 1 and discard 2',
@@ -139,19 +142,38 @@ const benedictions = [
     name: 'Revelation',
     desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
     effect: 'revelation',
+    weight: 8,
   },
-  { name: 'Second wind', desc: 'Shield you from loosing but remove all of your cards', effect: 'second-wind' },
-  //{ name: '13th taslisman', desc: 'Cancels the next malediction card', effect: '13th-talisman' },
+  {
+    name: 'Second wind',
+    desc: 'Shield you from loosing but remove all of your cards',
+    effect: 'second-wind',
+    weight: 10,
+  },
+  { name: '13th taslisman', desc: 'Cancel a malediction card', effect: '13th-talisman', weight: 5 },
 ];
 
+const cumlativeWeight = benedictions.reduce((r: number[], ben): any => {
+  const v = (r.length ? r[r.length - 1] : 0) + ben.weight;
+  r.push(v);
+  return r;
+}, []);
+
+function getWeightedRandom(): BenedictionCard {
+  const val = Math.floor(Math.random() * cumlativeWeight[cumlativeWeight.length - 1]);
+  const index = cumlativeWeight.findIndex((v) => v >= val);
+  return new BenedictionCard(benedictions[index]);
+}
+
 export function getRandomBenediction(benedictionHand: string[], cardByid: { [id: string]: Card }): BenedictionCard {
-  let benediction = new BenedictionCard(benedictions[Math.floor(Math.random() * benedictions.length)]);
+  console.log(getWeightedRandom());
+  let benediction = getWeightedRandom();
   while (
     benedictionHand.findIndex(
       (id) => id !== 'empty' && (cardByid[id] as BenedictionCard).effect === benediction.effect,
     ) !== -1
   ) {
-    benediction = new BenedictionCard(benedictions[Math.floor(Math.random() * benedictions.length)]);
+    benediction = getWeightedRandom();
   }
   return benediction;
 }

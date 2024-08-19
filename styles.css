@@ -1,10 +1,7 @@
-
-
 :root {
-  
   --bg: #342840;
-  --red: #B3515E;
-  --green: #8DB962;
+  --red: #b3515e;
+  --green: #8db962;
   --gold: #fecc16;
 }
 
@@ -16,7 +13,7 @@ html {
   width: 100%;
   position: relative;
   overflow: hidden;
-  user-select: none;;
+  user-select: none;
 }
 
 * {
@@ -145,12 +142,13 @@ html {
   padding: 0 16px 16px 16px;
   cursor: pointer;
   transition: all 0.3s;
+  background-size: cover;
 }
 .card.m .front label {
- color: var(--red);
+  color: var(--red);
 }
 .card.b .front label {
- color:var(--green);
+  color: var(--green);
 }
 .card.t .front p {
   font-size: 24px;
@@ -202,7 +200,7 @@ html {
 
 #malediction {
   position: absolute;
-  z-index: 99;
+  z-index: 98;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -217,20 +215,21 @@ html {
   color: white;
   font-size: 24px;
 }
+
 #malediction button {
-  margin-top: 280px;
+  margin-top: 296px;
 }
 
 button {
   border: none;
   border-radius: 8px;
-  padding: 16px 32px;
+  padding: 16px;
   text-transform: uppercase;
   background: brown;
   color: white;
   margin-top: 16px;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 18px;
   transition: all 0.3s;
 }
 

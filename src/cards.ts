@@ -23,6 +23,7 @@ export class BaseCard {
   posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
   canBeDiscarded: boolean = true;
+  val?: number;
 
   constructor(type: string) {
     this.type = type;
@@ -32,7 +33,6 @@ export class BaseCard {
 
 export class TreasureCard extends BaseCard {
   val: number;
-
   constructor(val: number) {
     super('t');
     this.val = val;
@@ -58,11 +58,13 @@ export class BenedictionCard extends BaseCard {
   effect: string;
   playable: boolean;
 
-  constructor(options: { name: string; desc: string; effect: string }) {
+  constructor(options: { name: string; desc: string; effect: string, val?: number }) {
     super('b');
     this.name = options.name;
     this.desc = options.desc;
     this.effect = options.effect;
+    this.val = options.val;
+
   }
 }
 
@@ -122,39 +124,53 @@ export function getMaledictionCards(): MaledictionCard[] {
 const benedictions = [
   { name: 'Evasion', desc: 'Discard a card in your hand', effect: 'evasion', weight: 4 },
   {
-    name: 'Protection',
+    name: 'Protection I',
+    desc: 'Lower a choosen card by 1. If it reaches 0, the card is discarded',
+    effect: 'protection',
+    weight: 12,
+    val: 1,
+  }, {
+    name: 'Protection II',
     desc: 'Lower a choosen card by 2. If it reaches 0, the card is discarded',
     effect: 'protection',
-    weight: 1,
+    weight: 10,
+    val: 2,
+  }, {
+    name: 'Protection III',
+    desc: 'Lower a choosen card by 3. If it reaches 0, the card is discarded',
+    effect: 'protection',
+    weight: 8,
+    val: 3,
   },
   {
     name: 'Lucky switch',
     desc: 'Switch one card from you hand by one of the same type',
     effect: 'lucky-switch',
+    weight: 6,
+  },
+  {
+    name: 'Vision of the future',
+    desc: 'Reveal the first 3 cards on the pile, choose 1 and discard 2',
+    effect: 'future-vision',
     weight: 2,
   },
-  // {
-  //   name: 'Vision of the future',
-  //   desc: 'Reveal the first 3 card on the pile choose 1 and discard 2',
-  //   effect: 'future-vision',
-  // },
   {
     name: 'Revelation',
     desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
     effect: 'revelation',
-    weight: 8,
+    weight: 5,
   },
   {
     name: 'Second wind',
     desc: 'Shield you from loosing but remove all of your cards',
     effect: 'second-wind',
-    weight: 10,
+    weight: 1,
   },
-  { name: '13th taslisman', desc: 'Cancel a malediction card', effect: '13th-talisman', weight: 5 },
+  { name: '13th taslisman', desc: 'Cancel a malediction card', effect: '13th-talisman', weight: 4 },
 ];
 
-const cumlativeWeight = benedictions.reduce((r: number[], ben): any => {
-  const v = (r.length ? r[r.length - 1] : 0) + ben.weight;
+const cumlativeWeight = benedictions.reduce((r: number[], benediction): any => {
+  const v = (r.length ? r[r.length - 1] : 0) + benediction.weight;
   r.push(v);
   return r;
 }, []);
@@ -166,11 +182,10 @@ function getWeightedRandom(): BenedictionCard {
 }
 
 export function getRandomBenediction(benedictionHand: string[], cardByid: { [id: string]: Card }): BenedictionCard {
-  console.log(getWeightedRandom());
   let benediction = getWeightedRandom();
   while (
     benedictionHand.findIndex(
-      (id) => id !== 'empty' && (cardByid[id] as BenedictionCard).effect === benediction.effect,
+      (id) => id !== 'empty' && (cardByid[id] as BenedictionCard).name === benediction.name,
     ) !== -1
   ) {
     benediction = getWeightedRandom();

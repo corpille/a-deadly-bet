@@ -10,13 +10,14 @@ import {
   getTreasureCards,
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep } from './utils';
-import { DRAW_ANIMATION_MS, NB_BENEDICTION_CARD } from './config';
+import { cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD } from './config';
 
 export enum ActionState {
   discard,
   draw,
   choose,
   chooseTreasure,
+  choosePreview,
 }
 
 export default class GameState {
@@ -36,6 +37,7 @@ export default class GameState {
   private cardRemainingEl = document.querySelector('#card-remaining span') as HTMLElement;
   private instructionEl = document.getElementById('instruction') as HTMLElement;
   private maledictionEl = document.getElementById('malediction') as HTMLElement;
+  private previewEl = document.getElementById('preview') as HTMLElement;
 
   constructor() {
     this.pile = [];
@@ -163,15 +165,19 @@ export default class GameState {
     this.updateCard(benedictionCard, 1);
   }
 
+  private findFirstTreasureCardIdOnPile() {
+    const index = this.pile.findLastIndex((id) => this.cardById[id] instanceof TreasureCard);
+    return this.pile.splice(index, 1)[0];
+  }
+
   private drawPile(onlyTreasure: boolean = false, options?: any): void {
     let cardId;
     if (onlyTreasure) {
-      const index = this.pile.findLastIndex((id) => this.cardById[id] instanceof TreasureCard);
-      cardId = this.pile.splice(index, 1)[0];
+      cardId = this.findFirstTreasureCardIdOnPile();
     } else {
       cardId = this.pile.pop();
-      if (!cardId) return;
     }
+    if (!cardId) return;
     const card = this.cardById[cardId];
     card.hidden = options?.hidden ?? false;
     card.canBeDiscarded = options?.canBeDiscarded ?? true;
@@ -243,9 +249,6 @@ export default class GameState {
         this.refreshHand();
         this.drawPile();
         break;
-      case 'god-faith':
-        // TODO: implement preview mode
-        break;
       case 'destiny-fracture':
         if (handIndex === -1) return;
         const fractureCard = this.cardById[this.hand[handIndex]] as TreasureCard;
@@ -275,8 +278,10 @@ export default class GameState {
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
     if (['second-wind'].includes(card.effect)) return;
-    card.pos = positions.center();
-    this.updateCard(card);
+    if (!['revelation', 'future-vision'].includes(card.effect)) {
+      card.pos = positions.center();
+      this.updateCard(card);
+    }
     switch (card.effect) {
       case 'evasion':
         this.setActionState(ActionState.discard);
@@ -285,7 +290,7 @@ export default class GameState {
         break;
       case 'protection':
         const chosenTreasureCard = (await this.chooseCard(ActionState.chooseTreasure)) as TreasureCard;
-        chosenTreasureCard.val -= 2;
+        chosenTreasureCard.val -= card.val ?? 0;
         if (chosenTreasureCard.val <= 0) {
           this.discardCard(chosenTreasureCard);
           this.hand.splice(this.hand.indexOf(chosenTreasureCard.id), 1);
@@ -317,7 +322,24 @@ export default class GameState {
         this.benedictionHand.splice(this.benedictionHand.indexOf(card.id), 100, 'empty');
         this.drawBenediction();
       case 'future-vision':
-        // TODO: implement preview mode
+        const cards = this.displayPilePreview();
+        const chosenKeptCard = (await this.chooseCard(ActionState.choosePreview));
+        cards.forEach(card => {
+          if (card.id !== chosenKeptCard.id) {
+            this.discardCard(card)
+          }
+        });
+
+        if (chosenKeptCard instanceof TreasureCard) {
+          this.hand.push(chosenKeptCard.id);
+          chosenKeptCard.pos = positions.hand(this.hand.length - 1);
+          this.updateCard(chosenKeptCard, 1, true, () => this.onClickHandCard(chosenKeptCard));
+        } else {
+          this.replaceBenediction(card);
+          await sleep(800);
+          this.displayMalediction(chosenKeptCard);
+          return;
+        }
         break;
       case 'dissipation':
         if (this.activeMaledictions.length) {
@@ -326,21 +348,39 @@ export default class GameState {
         }
         break;
       case 'revelation':
-        card.pos = positions.center();
         await sleep(800);
         const hiddenCard = Object.values(this.cardById).find((c) => this.hand.includes(c.id) && c.hidden);
-        if (hiddenCard) {
-          hiddenCard.hidden = false;
-          this.updateCard(hiddenCard, 1, false);
-          await sleep(800);
-        }
+        if (!hiddenCard) return;
+        hiddenCard.hidden = false;
+        this.updateCard(hiddenCard, 1, false);
+        await sleep(800);
         break;
     }
+    this.replaceBenediction(card);
+  }
+
+  replaceBenediction(card: BenedictionCard) {
     this.discardCard(card);
     const index = this.benedictionHand.indexOf(card.id);
     this.benedictionHand.splice(index, 1, 'empty');
     this.drawBenediction();
     this.setActionState(ActionState.draw);
+  }
+
+  displayPilePreview(): Card[] {
+    const cards = this.pile.splice(Math.min(this.pile.length - 3, 0), 3).map((id) => {
+      const card = this.cardById[id];
+      card.pos = positions.center();
+      card.hidden = false;
+      return card;
+    });
+    cards[0].pos.left -= cardWidth + 16;
+    cards[2].pos.left += cardWidth + 16;
+    cards.forEach(card => this.updateCard(card, 99, true, () => {
+      this.chosenCardId = card.id;
+      this.nbCardToAction--
+    }));
+    return cards;
   }
 
   private async drawFullBenedictionHand(): Promise<void> {
@@ -367,15 +407,22 @@ export default class GameState {
   public refreshInterface(): void {
     this.cardRemainingEl.innerText = this.pile.length.toString();
 
-    if (this.action === ActionState.discard) {
-      this.instructionEl.innerText = `Discard ${this.nbCardToAction} card${this.nbCardToAction > 1 ? 's' : ''}`;
-    } else if (this.action === ActionState.choose) {
-      this.instructionEl.innerText = 'Choose a card in your hand';
-    } else if (this.action === ActionState.chooseTreasure) {
-      this.instructionEl.innerText = 'Choose a treasure card in your hand ';
-    } else {
-      this.instructionEl.innerText = 'Draw or play a card';
+    let text = 'Draw or play a card'
+    switch (this.action) {
+      case ActionState.discard:
+        text = `Discard ${this.nbCardToAction} card${this.nbCardToAction > 1 ? 's' : ''}`;
+        break;
+      case ActionState.choose:
+        text = `Choose a card in your hand`;
+        break;
+      case ActionState.chooseTreasure:
+        text = `Choose a treasure card in your hand`;
+        break;
+      case ActionState.choosePreview:
+        text = `Choose a card to keep`;
+        break;
     }
+    this.instructionEl.innerText = text;
   }
 
   private async displayMalediction(card: MaledictionCard): Promise<void> {

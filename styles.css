@@ -88,6 +88,10 @@ html {
   transform: rotateY(180deg);
 }
 
+.card.locked .front {
+  cursor: pointer;
+}
+
 .card.locked .front::after {
   display: block;
 }
@@ -174,6 +178,10 @@ html {
   color: white;
   transform: rotateY(180deg);
   border-radius: 8px;
+}
+
+.card.pile .back {
+  cursor: pointer;
 }
 .card.b .back {
   background-image: url('/assets/card-bg-ben.webp');

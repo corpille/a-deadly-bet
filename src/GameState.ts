@@ -81,7 +81,7 @@ export default class GameState {
         listener = () => this.onClickHandCard(card as TreasureCard);
       }
       if (pileIndex !== -1) {
-        cardEl.classList.add('pile');
+        card.inPile = true;
         listener = () => this.onClickPile();
       }
       this.boardEl.appendChild(cardEl);
@@ -142,12 +142,7 @@ export default class GameState {
   }
 
   private drawBenediction(): void {
-    const card = Object.values(this.cardById).find(
-      (c) =>
-        c instanceof BenedictionCard &&
-        this.benedictionHand.indexOf(c.id) === -1 &&
-        this.discardedPile.indexOf(c.id) === -1,
-    ) as BenedictionCard;
+    const card = this.findBenedictionPile();
     const index = this.benedictionHand.indexOf('empty');
     if (index === -1) return;
     this.benedictionHand.splice(index, 1, card.id);
@@ -174,6 +169,7 @@ export default class GameState {
     const card = this.cardById[cardId];
     card.hidden = options?.hidden ?? false;
     card.locked = options?.locked ?? false;
+    card.inPile = false;
     if (card instanceof TreasureCard) {
       this.addCardToHand(card);
       this.nbCardToAction--;
@@ -185,8 +181,8 @@ export default class GameState {
   private addCardToHand(card: TreasureCard): void {
     card.pos = positions.hand(this.hand.length);
     this.hand.push(card.id);
-    const cardEl = this.updateCard(card, 98, () => this.onClickHandCard(card));
-    cardEl.classList.remove('discarded');
+    card.inDiscard = false;
+    this.updateCard(card, 98, () => this.onClickHandCard(card));
   }
 
   private discardCard(card: Card): void {
@@ -197,8 +193,8 @@ export default class GameState {
     if (card instanceof TreasureCard) {
       card.val = card.defaultVal;
     }
-    const cardEl = this.updateCard(card, this.discardedPile.length + 1, null);
-    cardEl.classList.add('discarded');
+    card.inDiscard = true;
+    this.updateCard(card, this.discardedPile.length + 1, null);
     if (this.action == ActionState.discard) {
       this.nbCardToAction--;
     }
@@ -355,8 +351,8 @@ export default class GameState {
       card.hidden = false;
       return card;
     });
-    cards[0].pos.left -= cardWidth + 16;
-    cards[2].pos.left += cardWidth + 16;
+    cards[0].pos.left -= cardWidth() + 16;
+    cards[2].pos.left += cardWidth() + 16;
     cards.forEach((card) =>
       this.updateCard(card, 99, () => {
         this.chosenCardId = card.id;
@@ -377,6 +373,17 @@ export default class GameState {
   // Visual functions
 
   public refreshAll() {
+    this.pile.forEach((id, index) => {
+      this.cardById[id].pos = positions.pile();
+      this.updateCard(this.cardById[id], index + 1)
+    });
+    this.discardedPile.forEach((id, index) => {
+      this.cardById[id].pos = positions.discard();
+      this.updateCard(this.cardById[id], index + 1)
+    });
+    const benedictionPile = this.findBenedictionPile()
+    benedictionPile.pos = positions.benedictionPile();
+    this.updateCard(benedictionPile, 1)
     this.initCardsVisuals();
     this.refreshInterface();
     this.refreshHand();
@@ -439,6 +446,8 @@ export default class GameState {
     cardEl.style.left = `${positions.left}px`;
     cardEl.classList.toggle('locked', card.locked);
     cardEl.classList.toggle('hidden', card.hidden);
+    cardEl.classList.toggle('pile', card.inPile);
+    cardEl.classList.toggle('discarded', card.inDiscard);
     cardEl.removeEventListener('click', card.listener);
     card.listener = listener;
     if (card.listener) {
@@ -471,6 +480,15 @@ export default class GameState {
   }
 
   // Utility functions
+
+  private findBenedictionPile() {
+    return Object.values(this.cardById).find(
+      (c) =>
+        c instanceof BenedictionCard &&
+        this.benedictionHand.indexOf(c.id) === -1 &&
+        this.discardedPile.indexOf(c.id) === -1,
+    ) as BenedictionCard;
+  }
 
   public setActionState(state: ActionState, nbCard: number = 1): void {
     this.nbCardToAction = nbCard;

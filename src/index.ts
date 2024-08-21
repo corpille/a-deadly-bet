@@ -1,4 +1,4 @@
-import { waitFor, resetEndState, checkEndGame, sleep, displayMessage, getRandomIndex } from './utils';
+import { waitFor, resetEndState, checkEndGame, sleep, displayMessage, getRandomIndex, playCancelablePromise } from './utils';
 import GameState, { ActionState } from './GameState';
 
 let state: GameState;
@@ -38,10 +38,10 @@ async function start(): Promise<any> {
 }
 
 (async () => {
-  // if (localStorage.getItem('hasPlayedAnimation')) {
-  await playBeginAnimation();
-  localStorage.setItem('hasPlayedAnimation', 'true');
-  // }
+  try {
+
+    await playCancelablePromise(playBeginAnimation);
+  } catch { }
 
   const scene = document.getElementById('scene') as HTMLElement;
   scene.style.display = 'none';
@@ -50,7 +50,9 @@ async function start(): Promise<any> {
   menu.style.display = 'flex';
 })();
 
+
 async function playBeginAnimation() {
+
   const deaths = ['while swallowing a watermelon', 'opening a can of tuna', 'falling from a bench'];
   const randomDeath = deaths[getRandomIndex(deaths)];
   const floorEl = document.getElementById('floor') as HTMLElement;
@@ -76,16 +78,16 @@ async function playBeginAnimation() {
   await sleep(500);
 
   await playDialog(label1El, [
-    { msg: 'Oh crap! ', time: 300 },
+    { msg: 'Oh crap!\n', time: 300 },
     { msg: 'No! ', time: 500 },
     { msg: 'No! ', time: 500 },
-    { msg: 'No! ', time: 500 },
-    { msg: 'I got stuff to do!', time: 2000 },
+    { msg: 'No!\n', time: 500 },
+    { msg: 'I got so much stuff to do!', time: 2000 },
   ]);
 
   await playDialog(label1El, [
     { msg: "I had Bob's barbecue on Thursday...\n", time: 1000 },
-    { msg: "I had the Knicker's finals in two week...\n", time: 1000 },
+    { msg: "I had the Knicker's finals in two weeks...\n", time: 1000 },
     { msg: 'Not now! ', time: 1000 },
   ]);
   deathEl.style.right = `25%`;

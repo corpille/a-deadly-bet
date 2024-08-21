@@ -69,3 +69,17 @@ export async function displayMessage(el: HTMLElement, msg: string) {
     await sleep(35);
   }
 }
+
+export function playCancelablePromise(animationFn: Function): Promise<void> {
+  return new Promise(async (resolve, reject) => {
+    const hook = (event: KeyboardEvent) => {
+      if (event.code == "Space") {
+        reject();
+        document.removeEventListener('keydown', hook);
+      }
+    }
+    document.addEventListener('keydown', hook);
+    await animationFn();
+    resolve()
+  });
+}

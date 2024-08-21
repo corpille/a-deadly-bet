@@ -1,22 +1,23 @@
 export const maxHeight = () => window.innerHeight;
 export const maxWidth = () => window.innerWidth;
-export const cardHeight = 200;
-export const cardWidth = 130;
+export const cardHeight = () => maxWidth() / 8;
+export const cardWidth = () => cardHeight() * 0.65;
+
 
 export const DRAW_ANIMATION_MS = 200;
 export const NB_BENEDICTION_CARD = 2;
 
 export const positions = {
   pile: () => ({ top: 16, left: 16 }),
-  benedictionPile: () => ({ top: 16, left: 16 + (cardWidth + 16) }),
-  discard: () => ({ top: 16, left: 16 + (cardWidth + 16) * 2 }),
-  hand: (index: number) => ({ top: maxHeight() - cardHeight - 16, left: 16 + (cardWidth + 16) * index }),
+  benedictionPile: () => ({ top: 16, left: 16 + (cardWidth() + 16) }),
+  discard: () => ({ top: 16, left: 16 + (cardWidth() + 16) * 2 }),
+  hand: (index: number) => ({ top: maxHeight() - cardHeight() - 16, left: 16 + (cardWidth() + 16) * index }),
   benedictionHand: (index: number) => ({
-    top: maxHeight() - cardHeight - 16,
-    left: maxWidth() - (cardWidth + 16) * (NB_BENEDICTION_CARD - index),
+    top: maxHeight() - cardHeight() - 16,
+    left: maxWidth() - (cardWidth() + 16) * (NB_BENEDICTION_CARD - index),
   }),
-  center: () => ({ top: maxHeight() / 2 - cardHeight / 2, left: maxWidth() / 2 - cardWidth / 2 }),
-  activeBenediction: () => ({ top: 16, left: maxWidth() - (cardWidth + 16) }),
+  center: () => ({ top: maxHeight() / 2 - cardHeight() / 2, left: maxWidth() / 2 - cardWidth() / 2 }),
+  activeBenediction: () => ({ top: 16, left: maxWidth() - (cardWidth() + 16) }),
 };
 
 export const maledictions = [

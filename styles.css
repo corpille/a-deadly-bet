@@ -15,6 +15,7 @@ html {
   overflow: hidden;
   user-select: none;
   background-color: var(--bg);
+  color: white;
 }
 
 * {
@@ -31,10 +32,16 @@ html {
   justify-content: space-around;
 }
 
+#skip {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  font-size: 24px;
+}
+
 #scene label {
   display: block;
   position: absolute;
-  color: white;
   font-size: 24px;
   transition: opacity 0.3s;
   width: 30%;
@@ -215,8 +222,8 @@ html {
 
 /* Style the front side (fallback if image is missing) */
 .card .front {
-  /* background-color: white; */
-  background-image: url('/assets/card.webp');
+  background-image: url('/assets/cards.webp');
+  background-size: cover;
   color: black;
   border-radius: 8px;
   display: flex;
@@ -251,7 +258,7 @@ html {
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: 12px;
+  font-size: 16px;
   padding: 0 16px 16px 16px;
   cursor: pointer;
   transition: all 0.3s;
@@ -273,12 +280,16 @@ html {
   display: none;
   height: 100%;
   width: 100%;
-  background-image: url('/assets/lock.webp');
+  background-image: url('/assets/cards.webp');
+  background-size: cover;
+  background-position: -300%;
   top: 0;
 }
 
 .card .back {
-  background-image: url('/assets/card-bg.webp');
+  background-image: url('/assets/cards.webp');
+  background-size: cover;
+  background-position: -100%;
   color: white;
   transform: rotateY(180deg);
   border-radius: 8px;
@@ -288,7 +299,7 @@ html {
   cursor: pointer;
 }
 .card.b .back {
-  background-image: url('/assets/card-bg-ben.webp');
+  background-position: -200%;
 }
 
 #instruction {
@@ -344,7 +355,7 @@ html {
 }
 
 #malediction button {
-  margin-top: 296px;
+  margin-top: 20%;
 }
 
 button {

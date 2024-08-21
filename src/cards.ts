@@ -10,6 +10,8 @@ export class BaseCard {
   posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
   locked: boolean = false;
+  inPile: boolean = false;
+  inDiscard: boolean = false;
 
   constructor(type: string) {
     this.type = type;
@@ -64,8 +66,8 @@ export function createDomCard(card: Card, id: string): HTMLElement {
     cardEl.classList.add('locked');
   }
   cardEl.setAttribute('data-id', id);
-  cardEl.style.height = `${cardHeight}px`;
-  cardEl.style.width = `${cardWidth}px`;
+  cardEl.style.height = `${cardHeight()}px`;
+  cardEl.style.width = `${cardWidth()}px`;
   const cardInnerEl = document.createElement('div') as HTMLElement;
   cardInnerEl.classList.add('inner');
   const cardBackEl = document.createElement('div') as HTMLElement;

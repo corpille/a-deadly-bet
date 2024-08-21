@@ -10,7 +10,6 @@ export class BaseCard {
   posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
   locked: boolean = false;
-  val?: number;
 
   constructor(type: string) {
     this.type = type;
@@ -45,6 +44,7 @@ export class BenedictionCard extends BaseCard {
   name: string;
   desc: string;
   effect: string;
+  val?: number;
 
   constructor(options: { name: string; desc: string; effect: string; val?: number }) {
     super('b');

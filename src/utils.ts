@@ -62,3 +62,10 @@ export function sleep(ms: number): Promise<void> {
     setTimeout(resolve, ms);
   });
 }
+
+export async function displayMessage(el: HTMLElement, msg: string) {
+  for (let i = 0; i < msg.length; i++) {
+    el.innerHTML += msg[i] === '\n' ? '<br/>' : msg[i];
+    await sleep(35);
+  }
+}

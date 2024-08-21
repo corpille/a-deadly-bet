@@ -286,7 +286,7 @@ export default class GameState {
         break;
       case 'protection':
         const chosenTreasureCard = (await this.chooseCard(ActionState.chooseTreasure)) as TreasureCard;
-        chosenTreasureCard.val -= card.val ?? 0;
+        chosenTreasureCard.val -= card.val ?? 1;
         if (chosenTreasureCard.val <= 0) {
           this.discardCardFrom(chosenTreasureCard, this.hand);
         } else {

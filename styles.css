@@ -1,5 +1,5 @@
 :root {
-  --bg: #342840;
+  --bg: #111; /*#342840;*/
   --red: #b3515e;
   --green: #8db962;
   --gold: #9b7d4b;
@@ -14,6 +14,7 @@ html {
   position: relative;
   overflow: hidden;
   user-select: none;
+  background-color: var(--bg);
 }
 
 * {
@@ -21,29 +22,107 @@ html {
   font-family: 'Courier New';
 }
 
+#scene {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#scene label {
+  color: white;
+  font-size: 24px;
+  transition: opacity 0.3s;
+}
+
+#floor {
+  position: absolute;
+  left: 0;
+  bottom: -50px;
+  width: 100%;
+  height: 48px;
+  background: #f2f0e6;
+  background: repeating-linear-gradient(45deg, #adaca5, #f1f0eb 0.2%, white 10%);
+  transition: bottom 0.3s;
+}
+
 #ghost {
   position: absolute;
-  left: 16px;
-  bottom: 16px;
-  height: 500px;
-  width: 260px;
+  left: calc(50% - (208px / 2) - 16px);
+  height: 400px;
+  width: 208px;
+  bottom: 100%;
   background-image: url('/assets/ghost.webp');
   background-size: cover;
+  transition: all 0.5s;
+  animation: float 4s infinite;
+}
+
+@keyframes fall {
+  0% {
+    top: -400px;
+  }
+  30% {
+    top: calc(50% - (400px / 2) - 16px);
+  }
+  70% {
+    top: calc(50% - (400px / 2) - 16px);
+  }
+  100% {
+    top: calc(100% - 400px - 16px);
+  }
 }
 
 #death {
   position: absolute;
-  right: 16px;
-  top: 16px;
+  right: -500px;
+  bottom: 16px;
   height: 381px;
   width: 417px;
+  transition: right 1s linear;
+}
+
+#death::before {
+  position: absolute;
+  content: '';
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  background-image: url('/assets/scythe.webp');
+  background-size: cover;
+  z-index: 200;
+  animation: float 4s infinite;
+}
+
+@keyframes float {
+  0% {
+    margin-bottom: 0px;
+  }
+  50% {
+    margin-bottom: 16px;
+  }
+  100% {
+    margin-bottom: 0px;
+  }
+}
+
+#death:after {
+  position: absolute;
+  content: '';
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
   background-image: url('/assets/death.webp');
   background-size: cover;
   z-index: 200;
 }
 
 #menu {
-  background-color: var(--bg);
+  display: none;
   color: white;
   display: flex;
   flex-direction: column;
@@ -67,7 +146,6 @@ html {
   position: relative;
   overflow: hidden;
   display: none;
-  background-color: var(--bg);
   color: white;
 }
 

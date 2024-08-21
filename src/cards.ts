@@ -106,7 +106,7 @@ export function getMaledictionCards(): MaledictionCard[] {
     new MaledictionCard('Past Weight', 'Add a hidden treasure from the pile to your hand', 'past-weight'),
     new MaledictionCard('Growing shadow', 'Add 2 points to one of the treasure card in your hand', 'growing-shadow'),
     new MaledictionCard('Unavoidable pain', "Pick a treasure card that is locked", 'unavoidable-pain'),
-    new MaledictionCard('Rage of the 13th', 'Add 1 to every card of value 3', '13th-rage'),
+    new MaledictionCard('Rage of the 13th', 'Add 1 to every card of value 3 in your hand', '13th-rage'),
     new MaledictionCard('False Hope', 'Replace a random card in your hand with one on top of the pile', 'false-hope'),
     new MaledictionCard(
       'Fracture of destiny',

@@ -21,6 +21,27 @@ html {
   font-family: 'Courier New';
 }
 
+#ghost {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  height: 500px;
+  width: 260px;
+  background-image: url('/assets/ghost.webp');
+  background-size: cover;
+}
+
+#death {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  height: 381px;
+  width: 417px;
+  background-image: url('/assets/death.webp');
+  background-size: cover;
+  z-index: 200;
+}
+
 #menu {
   background-color: var(--bg);
   color: white;

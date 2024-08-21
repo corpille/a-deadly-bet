@@ -185,7 +185,7 @@ export default class GameState {
   private addCardToHand(card: TreasureCard): void {
     card.pos = positions.hand(this.hand.length);
     this.hand.push(card.id);
-    const cardEl = this.updateCard(card, 99, () => this.onClickHandCard(card));
+    const cardEl = this.updateCard(card, 98, () => this.onClickHandCard(card));
     cardEl.classList.remove('discarded');
   }
 
@@ -194,6 +194,9 @@ export default class GameState {
     card.hidden = true;
     card.locked = false;
     card.pos = positions.discard();
+    if (card instanceof TreasureCard) {
+      card.val = card.defaultVal;
+    }
     const cardEl = this.updateCard(card, this.discardedPile.length + 1, null);
     cardEl.classList.add('discarded');
     if (this.action == ActionState.discard) {
@@ -308,6 +311,7 @@ export default class GameState {
         await sleep(300);
         this.discardCardFrom(card, this.benedictionHand);
         this.drawBenediction();
+        break;
       case 'future-vision':
         const cards = this.displayPilePreview();
         const chosenKeptCard = await this.chooseCard(ActionState.choosePreview);

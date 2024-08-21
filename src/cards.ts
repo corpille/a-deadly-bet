@@ -20,9 +20,11 @@ export class BaseCard {
 
 export class TreasureCard extends BaseCard {
   val: number;
+  defaultVal: number;
   constructor(val: number) {
     super('t');
     this.val = val;
+    this.defaultVal = val;
   }
 }
 
@@ -90,28 +92,28 @@ export function getMaledictionCards(): MaledictionCard[] {
   return maledictions.map((params) => new MaledictionCard(params));
 }
 
-const cumlativeWeight = benedictions.reduce((r: number[], benediction): any => {
-  const v = (r.length ? r[r.length - 1] : 0) + benediction.weight;
-  r.push(v);
-  return r;
-}, []);
+function calculateCumulativeWeights(arr: any[]): number[] {
+  return arr.reduce((r: number[], benediction): any => {
+    const v = (r.length ? r[r.length - 1] : 0) + benediction.weight;
+    r.push(v);
+    return r;
+  }, []);
+}
 
-function getWeightedRandom(): BenedictionCard {
+function getWeightedRandomBenediction(availableBenedictions: any[]): BenedictionCard {
+  const cumlativeWeight = calculateCumulativeWeights(availableBenedictions);
   const val = Math.floor(Math.random() * cumlativeWeight[cumlativeWeight.length - 1]);
   const index = cumlativeWeight.findIndex((v) => v >= val);
-  return new BenedictionCard(benedictions[index]);
+  return new BenedictionCard(availableBenedictions[index]);
 }
 
 export function getRandomBenediction(benedictionHand: string[], cardByid: { [id: string]: Card }): BenedictionCard {
-  let benediction = getWeightedRandom();
-  while (
-    benedictionHand.findIndex(
-      (id) => id !== 'empty' && (cardByid[id] as BenedictionCard).effect === benediction.effect,
-    ) !== -1
-  ) {
-    benediction = getWeightedRandom();
-  }
-  return benediction;
+  const benedictionHandEffect = benedictionHand
+    .filter((v) => v !== 'empty')
+    .map((id) => (cardByid[id] as BenedictionCard).effect);
+  const availableBenediction = benedictions.filter(({ effect }) => !benedictionHandEffect.includes(effect));
+  console.log(availableBenediction.map((e) => e.effect));
+  return getWeightedRandomBenediction(availableBenediction);
 }
 
 export function getTreasureCards(): Array<TreasureCard> {

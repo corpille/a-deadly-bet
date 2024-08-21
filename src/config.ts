@@ -74,7 +74,7 @@ export const benedictions = [
   },
   {
     name: 'Revelation',
-    desc: 'Reveal a hidden card and lower its value by 2. If it reaches 0, the card is discarded',
+    desc: 'Reveal a hidden card in you hand and lower it by 2. If it reaches 0, the card is discarded',
     effect: 'revelation',
     weight: 5,
   },

@@ -3,7 +3,9 @@ import GameState, { ActionState } from './GameState';
 
 let state: GameState;
 window.addEventListener('resize', () => {
-  state.refreshAll();
+  if (state.pile.length) {
+    state.refreshAll();
+  }
 });
 
 (document.getElementById('play') as HTMLElement).addEventListener('click', () => {
@@ -36,10 +38,10 @@ async function start(): Promise<any> {
 }
 
 (async () => {
-  if (localStorage.getItem('hasPlayedAnimation')) {
-    await playBeginAnimation();
-    localStorage.setItem('hasPlayedAnimation', 'true');
-  }
+  // if (localStorage.getItem('hasPlayedAnimation')) {
+  await playBeginAnimation();
+  localStorage.setItem('hasPlayedAnimation', 'true');
+  // }
 
   const scene = document.getElementById('scene') as HTMLElement;
   scene.style.display = 'none';
@@ -54,73 +56,90 @@ async function playBeginAnimation() {
   const floorEl = document.getElementById('floor') as HTMLElement;
   const ghostEl = document.getElementById('ghost') as HTMLElement;
   const deathEl = document.getElementById('death') as HTMLElement;
-  const labelEl = document.getElementById('scene-label') as HTMLElement;
-  await playDialog(labelEl, [
+  const label1El = document.getElementById('label1') as HTMLElement;
+  const label2El = document.getElementById('label2') as HTMLElement;
+  await playDialog(label1El, [
     { msg: 'You died', time: 1000 },
     { msg: '.', time: 300 },
     { msg: '.', time: 300 },
     { msg: '.', time: 1000 },
     { msg: ` ${randomDeath}`, time: 2000 },
   ]);
+  label1El.style.bottom = label2El.style.bottom = `500px`
+  label1El.style.left = `${ghostEl.offsetLeft + (ghostEl.clientWidth / 2) - (label1El.clientWidth / 2)}px`;
 
   ghostEl.style.bottom = `16px`;
   await sleep(200);
 
   // Show floor
-  floorEl.style.bottom = '8px';
+  floorEl.style.bottom = '0px';
   await sleep(500);
 
-  await playDialog(labelEl, [
+  await playDialog(label1El, [
     { msg: 'Oh crap! ', time: 300 },
     { msg: 'No! ', time: 500 },
     { msg: 'No! ', time: 500 },
     { msg: 'No! ', time: 500 },
-    { msg: 'I got stuff to do!', time: 3000 },
+    { msg: 'I got stuff to do!', time: 2000 },
   ]);
 
-  await playDialog(labelEl, [
+  await playDialog(label1El, [
     { msg: "I had Bob's barbecue on Thursday...\n", time: 1000 },
     { msg: "I had the Knicker's finals in two week...\n", time: 1000 },
     { msg: 'Not now! ', time: 1000 },
   ]);
-  deathEl.style.right = `32px`;
+  deathEl.style.right = `25%`;
   await sleep(1000);
-  await playDialog(labelEl, [
-    { msg: 'Death: Welp! What do we have here?\n', time: 600 },
+  label2El.style.left = `${deathEl.offsetLeft + (deathEl.clientWidth / 3) - (label2El.clientWidth / 2)}px`;
+  await playDialog(label2El, [
+    { msg: 'Welp! What do we have here?\n', time: 600 },
     { msg: "Another stupid death I'm guessing?\n", time: 600 },
     { msg: 'What is it this time?\n', time: 1500 },
-    { msg: `Ghost: I died ${randomDeath}...`, time: 1500 },
   ]);
-  await playDialog(labelEl, [
-    { msg: 'Death: ', time: 1000 },
-    { msg: ' *chuckles* I see...\n', time: 1500 },
+
+  await playDialog(label1El, [
+    { msg: `I died ${randomDeath}...`, time: 1500 },
+  ]);
+  await playDialog(label2El, [
+    { msg: '*chuckles* I see...\n', time: 1500 },
     { msg: "Well, let's go! I got things to do!", time: 1500 },
   ]);
   deathEl.style.transform = 'scaleX(-1)';
-  deathEl.style.right = `-64px`;
-  await sleep(1000);
-  deathEl.style.transform = '';
+  deathEl.style.right = `5%`;
+  await sleep(500);
 
-  await playDialog(labelEl, [
+  await playDialog(label1El, [
     { msg: 'Ghost: Wait!\n', time: 1000 },
+  ]);
+  deathEl.style.transform = '';
+  await sleep(200);
+  deathEl.style.right = `25%`;
+  await sleep(500);
+
+  await playDialog(label1El, [
     { msg: "I got to go back! I can't die now.\n", time: 1000 },
     { msg: 'I got important things to do!', time: 1500 },
   ]);
-  await playDialog(labelEl, [
-    { msg: "Death: That's not how it works buddy, you don't get to choose.\n", time: 1000 },
-    { msg: "Ghost: Can't you give me another chance ?.\n", time: 1000 },
-    { msg: 'Death: ', time: 1000 },
+  await playDialog(label2El, [
+    { msg: "That's not how it works buddy, you don't get to choose.\n", time: 1000 },
+  ]);
+  await playDialog(label1El, [
+    { msg: "Can't you give me another chance ?.\n", time: 2000 },
+  ]);
+  await playDialog(label2El, [
     { msg: '.', time: 300 },
     { msg: '.', time: 300 },
     { msg: '.', time: 1500 },
   ]);
-  await playDialog(labelEl, [
-    { msg: "Death: Ok, let's try something !\n", time: 1000 },
-    { msg: "If you can win a game of my chosing i'll give you 13 more days.\n", time: 1000 },
+  await playDialog(label2El, [
+    { msg: " Ok, let's try something !\n", time: 1000 },
+    { msg: "If you can win a game of my chosing i'll give you some more time.\n", time: 1000 },
     { msg: 'Deal ?\n', time: 1000 },
-    { msg: 'Ghost: Absolutely!', time: 1500 },
   ]);
-  await playDialog(labelEl, [{ msg: "Death: *smirks* Let's go then !", time: 1500 }]);
+  await playDialog(label1El, [
+    { msg: 'Absolutely! Deal!', time: 1500 },
+  ]);
+  await playDialog(label2El, [{ msg: "*smirks* Let's go then !", time: 1500 }]);
   deathEl.style.transform = 'scaleX(-1)';
   deathEl.style.right = `-500px`;
   ghostEl.style.transition = 'all 1.4s linear';

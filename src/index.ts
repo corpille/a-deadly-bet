@@ -2,8 +2,9 @@ import { waitFor, resetEndState, checkEndGame, sleep, displayMessage, getRandomI
 import GameState, { ActionState } from './GameState';
 
 let state: GameState;
+
 window.addEventListener('resize', () => {
-  if (state.pile.length) {
+  if (state) {
     state.refreshAll();
   }
 });
@@ -66,14 +67,14 @@ async function playBeginAnimation() {
     { msg: '.', time: 1000 },
     { msg: ` ${randomDeath}`, time: 2000 },
   ]);
-  label1El.style.bottom = label2El.style.bottom = `500px`
+  label1El.style.bottom = label2El.style.bottom = `31.25rem`
   label1El.style.left = `${ghostEl.offsetLeft + (ghostEl.clientWidth / 2) - (label1El.clientWidth / 2)}px`;
 
-  ghostEl.style.bottom = `16px`;
+  ghostEl.style.bottom = `1rem`;
   await sleep(200);
 
   // Show floor
-  floorEl.style.bottom = '0px';
+  floorEl.style.bottom = '0';
   await sleep(500);
 
   await playDialog(label1El, [
@@ -143,7 +144,7 @@ async function playBeginAnimation() {
   ]);
   await playDialog(label2El, [{ msg: "*smirks* Let's go then !", time: 1500 }]);
   deathEl.style.transform = 'scaleX(-1)';
-  deathEl.style.right = `-500px`;
+  deathEl.style.right = `-31.25rem`;
   ghostEl.style.transition = 'all 1.4s linear';
   ghostEl.style.left = '100%';
   await sleep(2000);

@@ -35,8 +35,8 @@ html {
 
 #skip {
   position: absolute;
-  top: 32px;
-  right: 32px;
+  top: 2rem;
+  right: 2rem;
   font-size: 1.5rem;
 }
 
@@ -53,9 +53,9 @@ html {
 #floor {
   position: absolute;
   left: 0;
-  bottom: -50px;
+  bottom: -3rem;
   width: 100%;
-  height: 48px;
+  height: 3rem;
   background: #f2f0e6;
   background: repeating-linear-gradient(45deg, #adaca5, #f1f0eb 0.2%, white 10%);
   transition: bottom 0.3s;
@@ -63,7 +63,7 @@ html {
 
 #ghost {
   position: absolute;
-  left: calc(32% - (208px / 2) - 16px);
+  left: calc(32% - (13rem / 2) - 1rem);
   height: 25rem;
   width: 13rem;
   bottom: 100%;
@@ -75,25 +75,23 @@ html {
 
 @keyframes fall {
   0% {
-    top: -400px;
+    top: -25rem;
   }
   30% {
-    top: calc(50% - (400px / 2) - 16px);
+    top: calc(50% - (25rem / 2) - 1rem);
   }
   70% {
-    top: calc(50% - (400px / 2) - 16px);
+    top: calc(50% - (25rem / 2) - 1rem);
   }
   100% {
-    top: calc(100% - 400px - 16px);
+    top: calc(100% - 25rem - 1rem);
   }
 }
 
 #death {
   position: absolute;
-  right: -500px;
-  bottom: 16px;
-  /* height: 381px;
-  width: 417px; */
+  right: -31.25rem;
+  bottom: 1rem;
   height: 23rem;
   width: 25.1732rem;
   transition: right 1s linear;
@@ -114,13 +112,13 @@ html {
 
 @keyframes float {
   0% {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
   50% {
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
   }
   100% {
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 }
 
@@ -173,8 +171,7 @@ html {
 #card-remaining {
   position: absolute;
   top: 30%;
-  left: 16px;
-  width: 130px;
+  left: 1rem;
   text-align: center;
   font-size: 1rem;
 }
@@ -182,8 +179,7 @@ html {
 .card {
   position: absolute;
   background-color: transparent;
-  perspective: 1000px; /* Remove this if you don't want the 3D effect */
-  border-radius: 8px;
+  perspective: 62.5rem;
   transition:
     top 0.8s,
     left 0.8s,
@@ -228,7 +224,6 @@ html {
   background-image: url('/assets/cards.webp');
   background-size: cover;
   color: black;
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -240,14 +235,14 @@ html {
 }
 
 .card .front label {
-  margin-top: 12px;
+  margin-top: 1rem;
   width: 100%;
   text-align: center;
   color: white;
   cursor: pointer;
   color: var(--gold);
   font-size: 1rem;
-  padding: 0 16px;
+  padding: 0 1rem;
   text-transform: uppercase;
 }
 
@@ -295,7 +290,6 @@ html {
   background-position: -100%;
   color: white;
   transform: rotateY(180deg);
-  border-radius: 8px;
 }
 
 .card.pile .back {
@@ -308,8 +302,8 @@ html {
 #instruction {
   position: absolute;
   top: 1rem;
-  width: 500px;
-  left: calc(50% - (500px / 2));
+  width: 30rem;
+  left: calc(50% - (30rem / 2));
   text-align: center;
   font-size: 2rem;
 }
@@ -363,14 +357,14 @@ html {
 
 button {
   border: none;
-  border-radius: 8px;
-  padding: 1rem;
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
   text-transform: uppercase;
   background: brown;
   color: white;
   margin-top: 1rem;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 1.5rem;
   transition: all 0.3s;
 }
 

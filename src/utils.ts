@@ -45,7 +45,7 @@ export async function waitFor(condFn: Function): Promise<any> {
 }
 
 export function displayElement(end: HTMLElement): void {
-  end.style.left = '0px';
+  end.style.left = '0';
   end.style.opacity = '1';
 }
 export function hideElement(end: HTMLElement): void {

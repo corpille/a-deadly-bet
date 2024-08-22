@@ -3,6 +3,7 @@
   --red: #b3515e;
   --green: #8db962;
   --gold: #9b7d4b;
+  --cardHeight: 
 }
 
 body,
@@ -170,7 +171,8 @@ html {
 
 #card-remaining {
   position: absolute;
-  top: 30%;
+  top: 17rem;
+  width: 9.75rem;
   left: 1rem;
   text-align: center;
   font-size: 1rem;

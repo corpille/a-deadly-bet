@@ -17,6 +17,20 @@ window.addEventListener('resize', () => {
 (document.getElementById('replay') as HTMLElement).addEventListener('click', start);
 (document.getElementById('play-malediction') as HTMLElement).addEventListener('click', () => state.playMalediction());
 
+
+(async () => {
+  // try {
+  //   await playCancelablePromise(playBeginAnimation);
+  // } catch { }
+
+  const scene = document.getElementById('scene') as HTMLElement;
+  scene.style.display = 'none';
+
+  const menu = document.getElementById('menu') as HTMLElement;
+  menu.style.display = 'flex';
+})();
+
+
 function reset(): void {
   state = new GameState();
   resetEndState();
@@ -38,19 +52,6 @@ async function start(): Promise<any> {
   }
 }
 
-(async () => {
-  try {
-    await playCancelablePromise(playBeginAnimation);
-  } catch { }
-
-  const scene = document.getElementById('scene') as HTMLElement;
-  scene.style.display = 'none';
-
-  const menu = document.getElementById('menu') as HTMLElement;
-  menu.style.display = 'flex';
-})();
-
-
 async function playBeginAnimation() {
 
   const deaths = ['while swallowing a watermelon', 'opening a can of tuna', 'falling from a bench'];
@@ -68,6 +69,7 @@ async function playBeginAnimation() {
     { msg: ` ${randomDeath}`, time: 2000 },
   ]);
   label1El.style.bottom = label2El.style.bottom = `31.25rem`
+
   label1El.style.left = `${ghostEl.offsetLeft + (ghostEl.clientWidth / 2) - (label1El.clientWidth / 2)}px`;
 
   ghostEl.style.bottom = `1rem`;
@@ -86,7 +88,7 @@ async function playBeginAnimation() {
   ]);
 
   await playDialog(label1El, [
-    { msg: "I had Bob's barbecue a 1pm...\n", time: 1000 },
+    { msg: "I had Bob's barbecue at 1pm...\n", time: 1000 },
     { msg: "I had the Laker's finals on the 13th...\n", time: 1000 },
     { msg: "I can's die now!", time: 1000 },
   ]);

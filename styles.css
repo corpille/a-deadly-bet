@@ -21,7 +21,7 @@ html {
 
 * {
   box-sizing: border-box;
-  font-family: 'Courier New';
+  font-family: 'Courier New', monospace;
 }
 
 #scene {

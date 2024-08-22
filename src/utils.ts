@@ -72,13 +72,18 @@ export async function displayMessage(el: HTMLElement, msg: string) {
 
 export function playCancelablePromise(animationFn: Function): Promise<void> {
   return new Promise(async (resolve, reject) => {
-    const hook = (event: KeyboardEvent) => {
+    const hookKeyboard = (event: KeyboardEvent) => {
       if (event.code == "Space") {
         reject();
-        document.removeEventListener('keydown', hook);
+        document.removeEventListener('keydown', hookKeyboard);
       }
     }
-    document.addEventListener('keydown', hook);
+    const hookTactile = (event: TouchEvent) => {
+        reject();
+        document.removeEventListener('touchstart', hookTactile);
+    }
+    document.addEventListener('keydown', hookKeyboard);
+    document.addEventListener('touchstart', hookTactile);
     await animationFn();
     resolve()
   });

@@ -39,7 +39,6 @@ async function start(): Promise<any> {
 
 (async () => {
   try {
-
     await playCancelablePromise(playBeginAnimation);
   } catch { }
 
@@ -79,16 +78,16 @@ async function playBeginAnimation() {
 
   await playDialog(label1El, [
     { msg: 'Oh crap!\n', time: 300 },
-    { msg: 'No! ', time: 500 },
-    { msg: 'No! ', time: 500 },
-    { msg: 'No!\n', time: 500 },
+    { msg: 'No! ', time: 200 },
+    { msg: 'No! ', time: 200 },
+    { msg: 'No!\n', time: 200 },
     { msg: 'I got so much stuff to do!', time: 2000 },
   ]);
 
   await playDialog(label1El, [
-    { msg: "I had Bob's barbecue on Thursday...\n", time: 1000 },
-    { msg: "I had the Knicker's finals in two weeks...\n", time: 1000 },
-    { msg: 'Not now! ', time: 1000 },
+    { msg: "I had Bob's barbecue a 1pm...\n", time: 1000 },
+    { msg: "I had the Laker's finals on the 13th...\n", time: 1000 },
+    { msg: "I can's die now!", time: 1000 },
   ]);
   deathEl.style.right = `25%`;
   await sleep(1000);
@@ -103,7 +102,8 @@ async function playBeginAnimation() {
     { msg: `I died ${randomDeath}...`, time: 1500 },
   ]);
   await playDialog(label2El, [
-    { msg: '*chuckles* I see...\n', time: 1500 },
+    { msg: '*chuckles*', time: 500 },
+    { msg: 'I see...\n', time: 1500 },
     { msg: "Well, let's go! I got things to do!", time: 1500 },
   ]);
   deathEl.style.transform = 'scaleX(-1)';

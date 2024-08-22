@@ -16,6 +16,7 @@ html {
   user-select: none;
   background-color: var(--bg);
   color: white;
+  font-size: 0.833333vw;
 }
 
 * {
@@ -36,15 +37,15 @@ html {
   position: absolute;
   top: 32px;
   right: 32px;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 #scene label {
   display: block;
   position: absolute;
-  font-size: 24px;
+  font-size: 1.5rem;
   transition: opacity 0.3s;
-  width: 30%;
+  width: 40%;
   bottom: 50%;
   text-align: center;
 }
@@ -63,8 +64,8 @@ html {
 #ghost {
   position: absolute;
   left: calc(32% - (208px / 2) - 16px);
-  height: 400px;
-  width: 208px;
+  height: 25rem;
+  width: 13rem;
   bottom: 100%;
   background-image: url('/assets/ghost.webp');
   background-size: cover;
@@ -91,8 +92,10 @@ html {
   position: absolute;
   right: -500px;
   bottom: 16px;
-  height: 381px;
-  width: 417px;
+  /* height: 381px;
+  width: 417px; */
+  height: 23rem;
+  width: 25.1732rem;
   transition: right 1s linear;
 }
 
@@ -144,12 +147,12 @@ html {
   width: 100%;
 }
 #menu h1 {
-  font-size: 64px;
+  font-size: 4rem;
 }
 
 #menu p {
   text-align: center;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 #game {
@@ -169,11 +172,11 @@ html {
 
 #card-remaining {
   position: absolute;
-  top: 232px;
+  top: 30%;
   left: 16px;
   width: 130px;
   text-align: center;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .card {
@@ -243,7 +246,7 @@ html {
   color: white;
   cursor: pointer;
   color: var(--gold);
-  font-size: 16px;
+  font-size: 1rem;
   padding: 0 16px;
   text-transform: uppercase;
 }
@@ -251,15 +254,15 @@ html {
 .card .front p {
   width: 100%;
   text-align: center;
-  padding: 8px;
+  padding: 0.5rem;
   min-height: 50%;
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: 16px;
-  padding: 0 16px 16px 16px;
+  font-size: 1rem;
+  padding: 0 1rem 1rem 1rem;
   cursor: pointer;
   transition: all 0.3s;
   background-size: cover;
@@ -271,7 +274,7 @@ html {
   color: var(--green);
 }
 .card.t .front p {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 .card .front::after {
@@ -304,11 +307,11 @@ html {
 
 #instruction {
   position: absolute;
-  top: 16px;
+  top: 1rem;
   width: 500px;
   left: calc(50% - (500px / 2));
   text-align: center;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 #goodEnd,
@@ -319,7 +322,7 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 64px;
+  font-size: 4rem;
   top: 0;
   left: 100%;
   bottom: 0;
@@ -351,7 +354,7 @@ html {
   opacity: 0;
   transition: opacity 0.3s 0.8s;
   color: white;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 #malediction button {
@@ -361,11 +364,11 @@ html {
 button {
   border: none;
   border-radius: 8px;
-  padding: 16px;
+  padding: 1rem;
   text-transform: uppercase;
   background: brown;
   color: white;
-  margin-top: 16px;
+  margin-top: 1rem;
   cursor: pointer;
   font-size: 18px;
   transition: all 0.3s;

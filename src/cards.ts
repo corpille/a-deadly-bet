@@ -114,7 +114,6 @@ export function getRandomBenediction(benedictionHand: string[], cardByid: { [id:
     .filter((v) => v !== 'empty')
     .map((id) => (cardByid[id] as BenedictionCard).effect);
   const availableBenediction = benedictions.filter(({ effect }) => !benedictionHandEffect.includes(effect));
-  console.log(availableBenediction.map((e) => e.effect));
   return getWeightedRandomBenediction(availableBenediction);
 }
 

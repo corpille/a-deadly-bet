@@ -28,7 +28,8 @@ getElementById('button').addEventListener('click', async () => {
   initAudioContext();
   try {
     await playCancelablePromise(playBeginAnimation);
-  } catch { }
+  } catch (e) { console.error(e) }
+  Audio.getInstance().stopBgMusic();
   scene.style.display = 'none';
   game.style.display = 'block';
   start();
@@ -78,11 +79,11 @@ async function playBeginAnimation() {
 
   ghostEl.style.bottom = `1rem`;
   await sleep(200);
+  Audio.getInstance().playBgMusic();
 
   // Show floor
   floorEl.style.bottom = '0';
   await sleep(500);
-  //Audio.getInstance().playBgMusic();
 
   await playDialog(label1El, [
     { msg: 'Oh crap!\n', time: 300 },

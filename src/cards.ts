@@ -65,7 +65,7 @@ export function createDomCard(card: Card, id: string): HTMLElement {
   if (!card.locked) {
     cardEl.classList.add('locked');
   }
-  cardEl.setAttribute('data-id', id);
+  cardEl.setAttribute('id', id);
   cardEl.style.height = `${cardHeight()}px`;
   cardEl.style.width = `${cardWidth()}px`;
   const cardInnerEl = document.createElement('div') as HTMLElement;

@@ -6,8 +6,10 @@ import {
   displayMessage,
   getRandomIndex,
   playCancelablePromise,
+  getElementById
 } from './utils';
 import GameState, { ActionState } from './GameState';
+import Audio, { initAudioContext } from './audio';
 
 let state: GameState;
 
@@ -17,25 +19,22 @@ window.addEventListener('resize', () => {
   }
 });
 
-(document.getElementById('play') as HTMLElement).addEventListener('click', () => {
-  (document.getElementById('menu') as HTMLElement).style.display = 'none';
-  (document.getElementById('game') as HTMLElement).style.display = 'block';
-  start();
-});
-(document.getElementById('replay') as HTMLElement).addEventListener('click', start);
-(document.getElementById('play-malediction') as HTMLElement).addEventListener('click', () => state.playMalediction());
-
-(async () => {
+const menu = getElementById('menu');
+const scene = getElementById('scene');
+const game = getElementById('game');
+getElementById('button').addEventListener('click', async () => {
+  menu.style.display = 'none';
+  scene.style.display = 'flex';
+  initAudioContext();
   try {
     await playCancelablePromise(playBeginAnimation);
-  } catch {}
-
-  const scene = document.getElementById('scene') as HTMLElement;
+  } catch { }
   scene.style.display = 'none';
-
-  const menu = document.getElementById('menu') as HTMLElement;
-  menu.style.display = 'flex';
-})();
+  game.style.display = 'block';
+  start();
+});
+getElementById('replay').addEventListener('click', start);
+getElementById('play-malediction').addEventListener('click', () => state.playMalediction());
 
 function reset(): void {
   state = new GameState();
@@ -61,11 +60,11 @@ async function start(): Promise<any> {
 async function playBeginAnimation() {
   const deaths = ['while swallowing a watermelon', 'opening a can of tuna', 'falling from a bench'];
   const randomDeath = deaths[getRandomIndex(deaths)];
-  const floorEl = document.getElementById('floor') as HTMLElement;
-  const ghostEl = document.getElementById('ghost') as HTMLElement;
-  const deathEl = document.getElementById('death') as HTMLElement;
-  const label1El = document.getElementById('label1') as HTMLElement;
-  const label2El = document.getElementById('label2') as HTMLElement;
+  const floorEl = getElementById('floor');
+  const ghostEl = getElementById('ghost');
+  const deathEl = getElementById('death');
+  const label1El = getElementById('label1');
+  const label2El = getElementById('label2');
   await playDialog(label1El, [
     { msg: 'You died', time: 1000 },
     { msg: '.', time: 300 },
@@ -83,6 +82,7 @@ async function playBeginAnimation() {
   // Show floor
   floorEl.style.bottom = '0';
   await sleep(500);
+  //Audio.getInstance().playBgMusic();
 
   await playDialog(label1El, [
     { msg: 'Oh crap!\n', time: 300 },
@@ -108,7 +108,7 @@ async function playBeginAnimation() {
 
   await playDialog(label1El, [{ msg: `I died ${randomDeath}...`, time: 1500 }]);
   await playDialog(label2El, [
-    { msg: '*chuckles*', time: 500 },
+    { msg: '*chuckles*\n', time: 500 },
     { msg: 'I see...\n', time: 1500 },
     { msg: "Well, let's go! I got things to do!", time: 1500 },
   ]);
@@ -127,7 +127,7 @@ async function playBeginAnimation() {
     { msg: 'I got important things to do!', time: 1500 },
   ]);
   await playDialog(label2El, [{ msg: "That's not how it works buddy, you don't get to choose.\n", time: 1000 }]);
-  await playDialog(label1El, [{ msg: "Can't you give me another chance ?.\n", time: 2000 }]);
+  await playDialog(label1El, [{ msg: "Can't you give me another chance ?\n", time: 2000 }]);
   await playDialog(label2El, [
     { msg: '.', time: 300 },
     { msg: '.', time: 300 },

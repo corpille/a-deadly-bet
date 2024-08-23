@@ -1,7 +1,12 @@
 import GameState from './GameState';
+import Audio from './audio';
 
-const goodEnd = document.getElementById('goodEnd') as HTMLElement;
-const badEnd = document.getElementById('badEnd') as HTMLElement;
+const goodEnd = getElementById('goodEnd');
+const badEnd = getElementById('badEnd');
+
+export function getElementById(id: string): HTMLElement {
+  return document.getElementById(id) as HTMLElement;
+}
 
 export function resetEndState(): void {
   hideElement(goodEnd);
@@ -57,34 +62,45 @@ export function getRandomIndex(arr: Array<any>): number {
   return Math.floor(Math.random() * arr.length);
 }
 
+let canceled = false;
+
 export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (canceled) {
+        canceled = false;
+        reject();
+      } else {
+        resolve();
+      }
+    }, ms);
   });
 }
 
 export async function displayMessage(el: HTMLElement, msg: string) {
   for (let i = 0; i < msg.length; i++) {
     el.innerHTML += msg[i] === '\n' ? '<br/>' : msg[i];
+    Audio.getInstance().playTS();
+    if (canceled) {
+      canceled = false;
+      throw 1;
+    }
     await sleep(35);
   }
 }
 
-export function playCancelablePromise(animationFn: Function): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    const hookKeyboard = (event: KeyboardEvent) => {
-      if (event.code == "Space") {
-        reject();
-        document.removeEventListener('keydown', hookKeyboard);
-      }
+export async function playCancelablePromise(animationFn: Function): Promise<void> {
+  const hookKeyboard = (event: KeyboardEvent) => {
+    if (event.code == "Space") {
+      canceled = true;
+      document.removeEventListener('keydown', hookKeyboard);
     }
-    const hookTactile = (event: TouchEvent) => {
-        reject();
-        document.removeEventListener('touchstart', hookTactile);
-    }
-    document.addEventListener('keydown', hookKeyboard);
-    document.addEventListener('touchstart', hookTactile);
-    await animationFn();
-    resolve()
-  });
+  }
+  const hookTactile = (event: TouchEvent) => {
+    canceled = true;
+    document.removeEventListener('touchstart', hookTactile);
+  }
+  document.addEventListener('keydown', hookKeyboard);
+  document.addEventListener('touchstart', hookTactile);
+  await animationFn();
 }

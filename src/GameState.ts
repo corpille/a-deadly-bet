@@ -8,7 +8,7 @@ import {
   getRandomBenediction,
   getTreasureCards,
 } from './cards';
-import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep } from './utils';
+import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
 import { cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
 
 export enum ActionState {
@@ -32,10 +32,10 @@ export default class GameState {
   activeMaledictions: MaledictionCard[];
   chosenCardId?: string;
 
-  private boardEl = document.getElementById('board') as HTMLElement;
+  private boardEl = getElementById('board');
   private cardRemainingEl = document.querySelector('#card-remaining span') as HTMLElement;
-  private instructionEl = document.getElementById('instruction') as HTMLElement;
-  private maledictionEl = document.getElementById('malediction') as HTMLElement;
+  private instructionEl = getElementById('instruction');
+  private maledictionEl = getElementById('malediction');
 
   constructor() {
     this.pile = [];
@@ -442,7 +442,7 @@ export default class GameState {
   }
 
   private updateCard(card: Card, zIndex: number = 1, listener: any = card.listener): HTMLElement {
-    const cardEl = this.boardEl.querySelector(`[data-id="${card.id}"`) as HTMLElement;
+    const cardEl = getElementById(card.id);
     const positions = card.pos;
     cardEl.style.zIndex = zIndex.toString();
     cardEl.style.top = `${positions.top}px`;

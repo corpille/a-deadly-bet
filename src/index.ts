@@ -9,7 +9,7 @@ import {
   getElementById
 } from './utils';
 import GameState, { ActionState } from './GameState';
-import Audio, { initAudioContext } from './audio';
+import Audio from './audio';
 
 let state: GameState;
 
@@ -25,7 +25,7 @@ const game = getElementById('game');
 getElementById('button').addEventListener('click', async () => {
   menu.style.display = 'none';
   scene.style.display = 'flex';
-  initAudioContext();
+  Audio.getInstance().initAudioContext();
   try {
     await playCancelablePromise(playBeginAnimation);
   } catch (e) { console.error(e) }
@@ -59,6 +59,7 @@ async function start(): Promise<any> {
 }
 
 async function playBeginAnimation() {
+
   const deaths = ['while swallowing a watermelon', 'opening a can of tuna', 'falling from a bench'];
   const randomDeath = deaths[getRandomIndex(deaths)];
   const floorEl = getElementById('floor');
@@ -79,10 +80,9 @@ async function playBeginAnimation() {
 
   ghostEl.style.bottom = `1rem`;
   await sleep(200);
-  Audio.getInstance().playBgMusic();
-
   // Show floor
   floorEl.style.bottom = '0';
+  Audio.getInstance().playBgMusic();
   await sleep(500);
 
   await playDialog(label1El, [

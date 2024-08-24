@@ -9,7 +9,7 @@ import {
   getElementById
 } from './utils';
 import GameState, { ActionState } from './GameState';
-import Audio from './audio';
+import Audio, { chords, loopLength, melody } from './audio';
 
 let state: GameState;
 
@@ -28,8 +28,7 @@ getElementById('button').addEventListener('click', async () => {
   Audio.getInstance().initAudioContext();
   try {
     await playCancelablePromise(playBeginAnimation);
-  } catch (e) { console.error(e) }
-  Audio.getInstance().stopBgMusic();
+  } catch { }
   scene.style.display = 'none';
   game.style.display = 'block';
   start();
@@ -82,7 +81,11 @@ async function playBeginAnimation() {
   await sleep(200);
   // Show floor
   floorEl.style.bottom = '0';
-  Audio.getInstance().playBgMusic();
+
+  Audio.getInstance().playBgMusic(chords);
+  setTimeout(() => {
+    Audio.getInstance().playBgMusic(melody);
+  }, loopLength * chords.notes.length);
   await sleep(500);
 
   await playDialog(label1El, [

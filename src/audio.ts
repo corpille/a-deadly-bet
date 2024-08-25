@@ -85,25 +85,41 @@ interface Synth {
 };
 
 const synthConfig = {
-  objects: 'o:sine,o:triangle,g,f:lowshelf:180:-18,f:highshelf:677:-6.2,f:highshelf:3157:-6.8',
+  objects: 'o:sine,o:triangle,g0,f:lowshelf:180:-18,f:highshelf:677:-6.2,f:highshelf:3157:-6.8',
   connections: 'o0-g0,o1-g0,g0-f0,f0-f1,f1-f2,f2-a'
 }
 
 export default class Audio {
-  i = 0;
+  mainVolume: number = MAIN_VOLUME;
+  typingVolume: number = 0.1;
   iterators: { [id: string]: number } = {};
   intervals: { [id: string]: NodeJS.Timeout } = {};
+  mainGain: GainNode;
+  typingGain: GainNode;
 
   initAudioContext() {
     aCtx = new AudioContext();
+    this.mainGain = aCtx.createGain();
+    this.typingGain = aCtx.createGain();
+    this.updateVolume();
+  }
+
+  updateVolume() {
+    const isMute = localStorage.getItem('adb-mute') === 'off';
+    this.mainVolume = isMute ? 0 : MAIN_VOLUME;
+    this.typingVolume = isMute ? 0 : 0.1;
+    this.mainGain.gain.cancelScheduledValues(aCtx.currentTime);
+    this.typingGain.gain.cancelScheduledValues(aCtx.currentTime);
+    this.mainGain.gain.value = this.mainVolume;
+    this.typingGain.gain.value = this.typingVolume;
   }
 
   playTS() {
     const synthConfig = {
-      objects: 'o:sine,g,f:highpass:190,f:notch:1223,f:lowshelf:1870:-10.5',
-      connections: 'o0-g0,g0-f0,f0-f1,f1-f2,f2-a'
+      objects: 'o:sine,g1,f:highpass:190,f:notch:1223,f:lowshelf:1870:-10.5,f:lowpass:500:-80',
+      connections: 'o0-g1,g1-f0,f0-f1,f1-f2,f2-f3,f3-a'
     }
-    this.playNote(synthConfig, aCtx.currentTime, notes.D4, 0.1, 0.1);
+    this.playNote(synthConfig, aCtx.currentTime, notes.D4, 0.1, this.typingVolume);
   }
 
   createSynth(synthConfig: SynthConfig): Synth {
@@ -116,8 +132,12 @@ export default class Audio {
       const [obj, type, frequency, gain] = conf.split(':');
       if (obj === 'o') {
         synth.oscillator.push(new OscillatorNode(aCtx, { type: type as OscillatorType }))
-      } else if (obj === 'g') {
-        synth.gains.push(aCtx.createGain());
+      } else if (obj === 'g0') {
+        this.mainGain.disconnect();
+        synth.gains.push(this.mainGain);
+      } else if (obj === 'g1') {
+        this.typingGain.disconnect();
+        synth.gains.push(this.typingGain);
       } else if (obj === 'f') {
         synth.filters.push(new BiquadFilterNode(aCtx, {
           type: type as BiquadFilterType,
@@ -128,7 +148,7 @@ export default class Audio {
     });
     synthConfig.connections.split(',').forEach((conf) => {
       const [from, to] = conf.split('-');
-      const match: any = { 'o': synth.oscillator, 'g': synth.gains, 'f': synth.filters };
+      const match: any = { 'o': synth.oscillator, 'g': [this.mainGain, this.typingGain], 'f': synth.filters };
       const fromNode = match[from[0]][parseInt(from[1])];
       const toNode = to === 'a' ? aCtx.destination : match[to[0]][parseInt(to[1])];
       fromNode.connect(toNode);
@@ -136,7 +156,7 @@ export default class Audio {
     return synth;
   }
 
-  playNote(synthConfig: SynthConfig, time: number, frequency: number, duration: number, volume = MAIN_VOLUME): void {
+  playNote(synthConfig: SynthConfig, time: number, frequency: number, duration: number, volume = this.mainVolume): void {
     const synth = this.createSynth(synthConfig);
     synth.gains.forEach(g => {
       g.gain.cancelScheduledValues(time);

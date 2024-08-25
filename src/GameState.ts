@@ -476,7 +476,7 @@ export default class GameState {
   }
 
   async playValueChangeAnimation(cardId: string): Promise<void> {
-    const valEl = this.boardEl.querySelector(`[data-id="${cardId}"] p`) as HTMLElement;
+    const valEl = this.boardEl.querySelector(`#${cardId} p`) as HTMLElement;
     valEl.style.fontSize = '3rem';
     await sleep(600);
     valEl.style.fontSize = '1.5rem';

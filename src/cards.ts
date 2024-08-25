@@ -15,7 +15,7 @@ export class BaseCard {
 
   constructor(type: string) {
     this.type = type;
-    this.id = `${this.type}-${id++}`;
+    this.id = `${this.type}${id++}`;
   }
 }
 

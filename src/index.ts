@@ -77,7 +77,7 @@ async function playBeginAnimation() {
 
   label1El.style.left = `${ghostEl.offsetLeft + ghostEl.clientWidth / 2 - label1El.clientWidth / 2}px`;
 
-  ghostEl.style.bottom = `1rem`;
+  ghostEl.style.bottom = `2rem`;
   await sleep(200);
   // Show floor
   floorEl.style.bottom = '0';
@@ -99,10 +99,11 @@ async function playBeginAnimation() {
   await playDialog(label1El, [
     { msg: "I had Bob's barbecue at 1pm...\n", time: 1000 },
     { msg: "I had the Laker's finals on the 13th...\n", time: 1000 },
-    { msg: "I can's die now!", time: 1000 },
+    { msg: "I can't die now!", time: 1000 },
   ]);
   deathEl.style.right = `25%`;
   await sleep(1000);
+
   label2El.style.left = `${deathEl.offsetLeft + deathEl.clientWidth / 3 - label2El.clientWidth / 2}px`;
   await playDialog(label2El, [
     { msg: 'Welp! What do we have here?\n', time: 600 },
@@ -116,12 +117,12 @@ async function playBeginAnimation() {
     { msg: 'I see...\n', time: 1500 },
     { msg: "Well, let's go! I got things to do!", time: 1500 },
   ]);
-  deathEl.style.transform = 'scaleX(-1)';
+  deathEl.style.animationName = 'flippedFloat';
   deathEl.style.right = `5%`;
   await sleep(500);
 
   await playDialog(label1El, [{ msg: 'Ghost: Wait!\n', time: 1000 }]);
-  deathEl.style.transform = '';
+  deathEl.style.animationName = 'float';
   await sleep(200);
   deathEl.style.right = `25%`;
   await sleep(500);
@@ -144,7 +145,7 @@ async function playBeginAnimation() {
   ]);
   await playDialog(label1El, [{ msg: 'Absolutely! Deal!', time: 1500 }]);
   await playDialog(label2El, [{ msg: "*smirks* Let's go then !", time: 1500 }]);
-  deathEl.style.transform = 'scaleX(-1)';
+  deathEl.style.animationName = 'flippedFloat';
   deathEl.style.right = `-31.25rem`;
   ghostEl.style.transition = 'all 1.4s linear';
   ghostEl.style.left = '100%';

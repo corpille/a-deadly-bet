@@ -9,7 +9,8 @@ import {
   getTreasureCards,
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
-import { cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
+import { cardHeight, cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
+import { playPilePresentation, playTutorialBegining } from './animation';
 
 export enum ActionState {
   discard,
@@ -70,8 +71,46 @@ export default class GameState {
   }
 
   private async initCardsVisuals(): Promise<void> {
+    await playTutorialBegining();
     this.boardEl.innerHTML = '';
-    Object.values(this.cardById).forEach((card) => {
+    Object.values(this.cardById).forEach(async (card) => {
+      const handIndex = this.hand.indexOf(card.id);
+      const pileIndex = this.pile.indexOf(card.id);
+      const pos = card.pos;
+      card.pos = { top: -cardHeight(), left: -cardWidth() };
+      const cardEl = createDomCard(card, card.id);
+      this.boardEl.appendChild(cardEl);
+      this.updateCard(card, pileIndex !== -1 ? pileIndex : 1);
+
+      await sleep(300);
+      card.pos = pos;
+
+      let listener;
+      if (handIndex !== -1) {
+        listener = () => this.onClickHandCard(card as TreasureCard);
+      }
+      if (pileIndex !== -1) {
+        card.inPile = true;
+        listener = () => this.onClickPile();
+      }
+      this.updateCard(card, pileIndex !== -1 ? pileIndex : 1, listener);
+    });
+
+    await playPilePresentation();
+    for (let i = 0; i < this.hand.length; i++) {
+      const card = this.cardById[this.hand[i]];
+      card.pos = positions.hand(i);
+      card.hidden = false;
+      this.updateCard(card, 100);
+      await sleep(DRAW_ANIMATION_MS);
+    }
+    await sleep(DRAW_ANIMATION_MS);
+    this.drawFullBenedictionHand();
+  }
+
+  private async refreshCardsVisuals(): Promise<void> {
+    this.boardEl.innerHTML = '';
+    Object.values(this.cardById).forEach(async (card) => {
       const handIndex = this.hand.indexOf(card.id);
       const pileIndex = this.pile.indexOf(card.id);
       const cardEl = createDomCard(card, card.id);
@@ -378,16 +417,16 @@ export default class GameState {
   public refreshAll() {
     this.pile.forEach((id, index) => {
       this.cardById[id].pos = positions.pile();
-      this.updateCard(this.cardById[id], index + 1)
+      this.updateCard(this.cardById[id], index + 1);
     });
     this.discardedPile.forEach((id, index) => {
       this.cardById[id].pos = positions.discard();
-      this.updateCard(this.cardById[id], index + 1)
+      this.updateCard(this.cardById[id], index + 1);
     });
-    const benedictionPile = this.findBenedictionPile()
+    const benedictionPile = this.findBenedictionPile();
     benedictionPile.pos = positions.benedictionPile();
-    this.updateCard(benedictionPile, 1)
-    this.initCardsVisuals();
+    this.updateCard(benedictionPile, 1);
+    this.refreshCardsVisuals();
     this.refreshInterface();
     this.refreshHand();
     this.refreshBenedictionHand();

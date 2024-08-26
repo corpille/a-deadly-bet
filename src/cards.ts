@@ -7,7 +7,6 @@ export class BaseCard {
   type: string;
   hidden: boolean = true;
   listener?: any;
-  posFn: any = positions.pile();
   pos: { top: number; left: number } = positions.pile();
   locked: boolean = false;
   inPile: boolean = false;

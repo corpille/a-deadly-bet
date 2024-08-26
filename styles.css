@@ -3,9 +3,9 @@
   --red: #b3515e;
   --green: #8db962;
   --gold: #9b7d4b;
-  --deathRatio: 67/127; 
-  --ghostRatio: 39/121; 
-  --scytheRatio: 129/93; 
+  --deathRatio: 67/127;
+  --ghostRatio: 39/121;
+  --scytheRatio: 129/93;
 }
 
 body,
@@ -79,12 +79,23 @@ html {
 
 #death {
   position: absolute;
-  right: -31.25rem;
+  right: calc(-20rem * var(--scytheRatio));
   bottom: 2rem;
   height: 23rem;
   width: calc(23rem * var(--deathRatio));
   transition: right 1s linear;
-  animation: float 4s .1s infinite;
+  animation: float 4s 0.1s infinite;
+}
+
+@keyframes incoming {
+  0% {
+    right: calc(20rem * var(--scytheRatio));
+    transform: rotate(0deg) translate3d(-15rem, 55vh, 0) rotate(0deg);
+  }
+  100% {
+    right: calc(20rem * var(--scytheRatio));
+    transform: rotate(180deg) translate3d(-15rem, 55vh, 0) rotate(-180deg);
+  }
 }
 
 #death::before {
@@ -97,29 +108,29 @@ html {
   background-image: url('/assets/scythe.webp');
   background-size: cover;
   z-index: 200;
-  animation: float 4s .3s infinite;
+  animation: float linear 4s 0.3s infinite;
 }
 
 @keyframes float {
   0% {
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(0,1rem,0);
+    transform: translate3d(0, 1rem, 0);
   }
   100% {
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
 }
 @keyframes flippedFloat {
   0% {
-    transform: translate3d(0,0,0) scaleX(-1);
+    transform: translate3d(0, 0, 0) scaleX(-1);
   }
   50% {
-    transform: translate3d(0,1rem,0) scaleX(-1);
+    transform: translate3d(0, 1rem, 0) scaleX(-1);
   }
   100% {
-    transform: translate3d(0,0,0) scaleX(-1);
+    transform: translate3d(0, 0, 0) scaleX(-1);
   }
 }
 #death:after {
@@ -394,5 +405,5 @@ button:hover {
 }
 
 #mute:hover {
-  background-color: rgba(255,255,255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }

@@ -10,7 +10,7 @@ import {
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
 import { cardHeight, cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
-import { playPilePresentation, playTutorialBegining } from './animation';
+import { playBenedictionHandPresentation, playHandPresentation, playPilePresentation, playTutorialBegining } from './animation';
 
 export enum ActionState {
   discard,
@@ -32,6 +32,7 @@ export default class GameState {
   currentMalediction?: MaledictionCard;
   activeMaledictions: MaledictionCard[];
   chosenCardId?: string;
+  ready: boolean = false;
 
   private boardEl = getElementById('board');
   private cardRemainingEl = document.querySelector('#card-remaining span') as HTMLElement;
@@ -96,6 +97,8 @@ export default class GameState {
       this.updateCard(card, pileIndex !== -1 ? pileIndex : 1, listener);
     });
 
+    await sleep(1200);
+    getElementById('card-remaining').style.opacity = '1';
     await playPilePresentation();
     for (let i = 0; i < this.hand.length; i++) {
       const card = this.cardById[this.hand[i]];
@@ -105,7 +108,11 @@ export default class GameState {
       await sleep(DRAW_ANIMATION_MS);
     }
     await sleep(DRAW_ANIMATION_MS);
+    await playHandPresentation();
     this.drawFullBenedictionHand();
+    await playBenedictionHandPresentation();
+    getElementById('instruction').style.opacity = '1';
+    this.ready = true;
   }
 
   private async refreshCardsVisuals(): Promise<void> {
@@ -157,7 +164,7 @@ export default class GameState {
   }
 
   private onClickHandCard(card: TreasureCard): void {
-    if (card.locked) return;
+    if (!this.ready || card.locked) return;
     const handIndex = this.hand.indexOf(card.id);
     if (this.action == ActionState.discard) {
       this.discardCardFrom(card, this.hand);

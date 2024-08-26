@@ -1,7 +1,7 @@
 import { waitFor, resetEndState, checkEndGame, playCancelablePromise, getElementById } from './utils';
 import GameState, { ActionState } from './GameState';
 import Audio from './audio';
-import { playIntroAnimation } from './animation';
+import { label1El, label2El, playIntroAnimation } from './animation';
 
 let state: GameState;
 
@@ -31,7 +31,10 @@ getElementById('start-button').addEventListener('click', async () => {
   try {
     // use to skip an async/await function
     await playCancelablePromise(playIntroAnimation);
-  } catch {}
+  } catch {
+    label1El.style.opacity = '0';
+    label2El.style.opacity = '0';
+  }
   scene.style.display = 'none';
   game.style.display = 'block';
   start();

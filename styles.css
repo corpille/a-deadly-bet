@@ -44,15 +44,50 @@ html {
   font-size: 1.5rem;
 }
 
-#scene label {
+.text-label {
   display: block;
   position: absolute;
   font-size: 1.5rem;
   transition: opacity 0.3s;
-  width: 40%;
+  width: 40rem;
   bottom: 50%;
-  text-align: center;
+  text-align: left;
+  background-color: white;
+  border-radius: 0.5rem;
+  color: #111;
+  font-weight: 500;
+  padding: 1rem;
+  opacity: 0;
 }
+.text-label::before {
+  position: absolute;
+  content: '';
+  display : inline-block;
+  height : 0;
+  width : 0;
+}
+
+.text-label.br::before {
+  right: 13rem;
+  bottom: -0.9rem;
+  border-top : 1rem solid white;
+  border-right : 1rem solid transparent;
+}
+
+.text-label.bl::before {
+  left: 13rem;
+  bottom: -0.9rem;
+  border-top : 1rem solid white;
+  border-left : 1rem solid transparent;
+}
+
+.text-label.rt::before {
+  right: -0.9rem;
+  top: 1rem;
+  border-bottom : 1rem solid white;
+  border-right : 1rem solid transparent;
+}
+
 
 #floor {
   position: absolute;
@@ -90,11 +125,11 @@ html {
 @keyframes incoming {
   0% {
     right: calc(20rem * var(--scytheRatio));
-    transform: rotate(0deg) translate3d(-15rem, 55vh, 0) rotate(0deg);
+    transform: rotate(0deg) translate3d(-15rem, calc(100vh - 23rem - 4rem), 0) rotate(0deg);
   }
   100% {
     right: calc(20rem * var(--scytheRatio));
-    transform: rotate(180deg) translate3d(-15rem, 55vh, 0) rotate(-180deg);
+    transform: rotate(180deg) translate3d(-15rem, calc(100vh - 23rem - 4rem), 0) rotate(-180deg);
   }
 }
 
@@ -188,6 +223,8 @@ html {
   left: 1rem;
   text-align: center;
   font-size: 1rem;
+  opacity: 0;
+  transition: opacity 0.8s;
 }
 
 .card {
@@ -319,6 +356,8 @@ html {
   left: calc(50% - (30rem / 2));
   text-align: center;
   font-size: 2rem;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 #goodEnd,

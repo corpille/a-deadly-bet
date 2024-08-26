@@ -1,7 +1,7 @@
 const rem = (nb: number) => Math.round(maxWidth() / 100 * 0.833333) * nb;
 export const maxHeight = () => window.innerHeight;
 export const maxWidth = () => window.innerWidth;
-export const cardHeight = () => rem(15)
+export const cardHeight = () => rem(15);
 export const cardWidth = () => cardHeight() * 0.65;
 
 

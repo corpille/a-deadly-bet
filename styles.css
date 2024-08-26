@@ -3,7 +3,7 @@
   --red: #b3515e;
   --green: #8db962;
   --gold: #9b7d4b;
-  --deathRatio: 67/127;
+  --deathRatio: 67/121;
   --ghostRatio: 39/121;
   --scytheRatio: 129/93;
 }
@@ -44,6 +44,10 @@ html {
   font-size: 1.5rem;
 }
 
+#label1 {
+  left: calc(50% - 40rem / 2)
+}
+
 .text-label {
   display: block;
   position: absolute;
@@ -51,10 +55,8 @@ html {
   transition: opacity 0.3s;
   width: 40rem;
   bottom: 50%;
-  text-align: left;
-  background-color: white;
+  text-align: center;
   border-radius: 0.5rem;
-  color: #111;
   font-weight: 500;
   padding: 1rem;
   opacity: 0;
@@ -65,6 +67,14 @@ html {
   display : inline-block;
   height : 0;
   width : 0;
+}
+
+.text-label.br,
+.text-label.bl,
+.text-label.rt {
+  background-color: white;
+  color: #111;
+  text-align: left;
 }
 
 .text-label.br::before {
@@ -435,7 +445,7 @@ button:hover {
   margin: 0;
   border-radius: 50%;
   background-image: url('/assets/sound.webp');
-  background-size: cover;
+  background-size: 200% 100%;
   background-position: 0%;
 }
 

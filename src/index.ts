@@ -1,12 +1,12 @@
 import { waitFor, resetEndState, checkEndGame, playCancelablePromise, getElementById } from './utils';
 import GameState, { ActionState } from './GameState';
-import Audio from './audio';
+import Audio, { chords, melody } from './audio';
 import { label1El, label2El, playIntroAnimation } from './animation';
 
 let state: GameState;
 
 window.addEventListener('resize', () => {
-  if (state) {
+  if (state && state.ready) {
     state.refreshAll();
   }
 });
@@ -34,6 +34,10 @@ getElementById('start-button').addEventListener('click', async () => {
   } catch {
     label1El.style.opacity = '0';
     label2El.style.opacity = '0';
+  }
+  if (Object.keys(Audio.getInstance().intervals).length === 0) {
+    Audio.getInstance().playBgMusic(chords);
+    Audio.getInstance().playBgMusic(melody);
   }
   scene.style.display = 'none';
   game.style.display = 'block';

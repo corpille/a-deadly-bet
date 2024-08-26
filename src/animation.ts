@@ -7,6 +7,19 @@ const ghostEl = getElementById('ghost');
 export const label1El = getElementById('label1');
 export const label2El = getElementById('label2');
 
+
+const deaths = [
+  'while swallowing a watermelon',
+  'opening a can of tuna',
+  'falling from a bench',
+  'getting hit by a turtoise shell',
+  'while attempting to ride a snail',
+  'trying to obtain the world record for the longest wedgy',
+  'protesting helmet regulation',
+  'falling into a giant bowl of jello',
+  'crushed by a pile of my collectioned snow globes'
+];
+
 async function playDialog(el: HTMLElement, lines: { msg: string; time: number }[]) {
   el.innerHTML = '';
   el.style.opacity = '1';
@@ -19,7 +32,6 @@ async function playDialog(el: HTMLElement, lines: { msg: string; time: number }[
 }
 
 export async function playIntroAnimation() {
-  const deaths = ['while swallowing a watermelon', 'opening a can of tuna', 'falling from a bench'];
   const randomDeath = deaths[getRandomIndex(deaths)];
   await playDialog(label1El, [
     { msg: 'You died', time: 1000 },
@@ -108,12 +120,19 @@ export async function playIntroAnimation() {
   await sleep(2000);
 }
 
+export async function showDeath() {
+  deathEl.style.display = 'block';
+  deathEl.style.right = '12.5rem';
+  deathEl.style.top = '2rem';
+  deathEl.style.bottom = '0';
+}
+
 export async function playTutorialBegining() {
   deathEl.style.display = 'block';
-  deathEl.style.animation = 'incoming ease-in-out 3s forwards';
-  await sleep(3000);
+  deathEl.style.animation = 'incoming ease-in-out 2s forwards';
+  await sleep(2300);
   deathEl.style.right = '12.5rem';
-  deathEl.style.top = '4rem';
+  deathEl.style.top = '2rem';
   deathEl.style.bottom = '0';
   deathEl.style.animation = 'float 4s 0.1s infinite';
   label1El.classList.remove('br')
@@ -121,6 +140,7 @@ export async function playTutorialBegining() {
   label1El.style.right = '30rem';
   label1El.style.top = '6rem';
   label1El.style.bottom = 'auto';
+  label1El.style.left = 'auto';
   await playDialog(label1El, [
     { msg: "Alright! Here's the game!\n", time: 1000 },
     { msg: "You see that pile over there!\n", time: 1000 },

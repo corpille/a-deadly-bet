@@ -10,7 +10,7 @@ import {
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
 import { cardHeight, cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
-import { playBenedictionHandPresentation, playHandPresentation, playPilePresentation, playTutorialBegining } from './animation';
+import { playBenedictionHandPresentation, playHandPresentation, playPilePresentation, playTutorialBegining, showDeath } from './animation';
 
 export enum ActionState {
   discard,
@@ -64,7 +64,11 @@ export default class GameState {
     const benediction = getRandomBenediction(this.benedictionHand, this.cardById);
     benediction.pos = positions.benedictionPile();
     this.cardById[benediction.id] = benediction;
-    this.initCardsVisuals();
+    if (localStorage.getItem('adb-tuto') === 'done') {
+      this.refreshCardsVisuals();
+    } else {
+      this.initCardsVisuals();
+    }
   }
 
   resetBenediction() {
@@ -113,9 +117,12 @@ export default class GameState {
     await playBenedictionHandPresentation();
     getElementById('instruction').style.opacity = '1';
     this.ready = true;
+    localStorage.setItem('adb-tuto', 'done')
   }
 
   private async refreshCardsVisuals(): Promise<void> {
+    await showDeath();
+    this.ready = false;
     this.boardEl.innerHTML = '';
     Object.values(this.cardById).forEach(async (card) => {
       const handIndex = this.hand.indexOf(card.id);
@@ -144,6 +151,7 @@ export default class GameState {
     }
     await sleep(DRAW_ANIMATION_MS);
     this.drawFullBenedictionHand();
+    this.ready = true;
   }
 
   // Listener functions

@@ -22,12 +22,12 @@ const deaths = [
   'crushed by a pile of my collectioned snow globes',
 ];
 
-async function playDialog(el: HTMLElement, lines: { msg: string; time: number }[]) {
+async function playDialog(el: HTMLElement, lines: [string, number][]) {
   el.innerHTML = '';
   el.style.opacity = '1';
   for (let i = 0; i < lines.length; i++) {
-    await displayMessage(el, lines[i].msg);
-    await sleep(lines[i].time);
+    await displayMessage(el, lines[i][0]);
+    await sleep(lines[i][1]);
   }
   el.style.opacity = '0';
   await sleep(300);
@@ -48,11 +48,11 @@ export async function playIntroAnimation() {
   skipEl.style.opacity = '1';
   const randomDeath = deaths[getRandomIndex(deaths)];
   await playDialog(ghostLabel, [
-    { msg: 'You died', time: 1000 },
-    { msg: '.', time: 300 },
-    { msg: '.', time: 300 },
-    { msg: '.', time: 1000 },
-    { msg: ` ${randomDeath}`, time: 2000 },
+    ['You died', 1000],
+    ['.', 300],
+    ['.', 300],
+    ['.', 1000],
+    [` ${randomDeath}`, 2000],
   ]);
 
   setGhostLabelPosition();
@@ -69,62 +69,62 @@ export async function playIntroAnimation() {
   await sleep(500);
 
   await playDialog(ghostLabel, [
-    { msg: 'Oh crap!\n', time: 300 },
-    { msg: 'No! ', time: 200 },
-    { msg: 'No! ', time: 200 },
-    { msg: 'No!\n', time: 200 },
-    { msg: 'I got so much stuff to do!', time: 2000 },
+    ['Oh crap!\n', 300],
+    ['No! ', 200],
+    ['No! ', 200],
+    ['No!\n', 200],
+    ['I got so much stuff to do!', 2000],
   ]);
 
   await playDialog(ghostLabel, [
-    { msg: "I had Bob's barbecue at 1pm...\n", time: 1000 },
-    { msg: "And the Laker's finals on the 13th...\n", time: 1000 },
-    { msg: "I can't die now!", time: 1000 },
+    ["I had Bob's barbecue at 1pm...\n", 1000],
+    ["And the Laker's finals on the 13th...\n", 1000],
+    ["I can't die now!", 1000],
   ]);
   deathEl.style.right = `25%`;
   await sleep(1000);
 
   setDeathLabelPosition();
   await playDialog(deathLabel, [
-    { msg: 'Welp! What do we have here?\n', time: 600 },
-    { msg: "Another stupid death I'm guessing?\n", time: 600 },
-    { msg: 'What is it this time?\n', time: 1500 },
+    ['Welp! What do we have here?\n', 600],
+    ["Another stupid death I'm guessing?\n", 600],
+    ['What is it this time?\n', 1500],
   ]);
 
-  await playDialog(ghostLabel, [{ msg: `I died ${randomDeath}...`, time: 1500 }]);
+  await playDialog(ghostLabel, [[`I died ${randomDeath}...`, 1500]]);
   await playDialog(deathLabel, [
-    { msg: '*chuckles*\n', time: 500 },
-    { msg: 'I see...\n', time: 1500 },
-    { msg: "Well, let's go! I got things to do!", time: 1500 },
+    ['*chuckles*\n', 500],
+    ['I see...\n', 1500],
+    ["Well, let's go! I got things to do!", 1500],
   ]);
   deathEl.style.animationName = 'flippedFloat';
   deathEl.style.right = `5%`;
   await sleep(500);
 
-  await playDialog(ghostLabel, [{ msg: 'Ghost: Wait!\n', time: 1000 }]);
+  await playDialog(ghostLabel, [['Ghost: Wait!\n', 1000]]);
   deathEl.style.animationName = 'float';
   await sleep(200);
   deathEl.style.right = `25%`;
   await sleep(500);
 
   await playDialog(ghostLabel, [
-    { msg: "I got to go back! I can't die now.\n", time: 1000 },
-    { msg: 'I got important things to do!', time: 1500 },
+    ["I got to go back! I can't die now.\n", 1000],
+    ['I got important things to do!', 1500],
   ]);
-  await playDialog(deathLabel, [{ msg: "That's not how it works buddy, you don't get to choose.\n", time: 1000 }]);
-  await playDialog(ghostLabel, [{ msg: "Can't you give me another chance ?\n", time: 2000 }]);
+  await playDialog(deathLabel, [["That's not how it works buddy, you don't get to choose.\n", 1000]]);
+  await playDialog(ghostLabel, [["Can't you give me another chance ?\n", 2000]]);
   await playDialog(deathLabel, [
-    { msg: '.', time: 300 },
-    { msg: '.', time: 300 },
-    { msg: '.', time: 1500 },
+    ['.', 300],
+    ['.', 300],
+    ['.', 1500],
   ]);
   await playDialog(deathLabel, [
-    { msg: " Ok, let's try something !\n", time: 1000 },
-    { msg: "If you can win a game of my chosing I'll give you some more time.\n", time: 1000 },
-    { msg: 'Deal ?\n', time: 1000 },
+    [" Ok, let's try something !\n", 1000],
+    ["If you can win a game of my chosing I'll give you some more time.\n", 1000],
+    ['Deal ?\n', 1000],
   ]);
-  await playDialog(ghostLabel, [{ msg: 'Absolutely! Deal!', time: 1500 }]);
-  await playDialog(deathLabel, [{ msg: "*smirks* Let's go then !", time: 1500 }]);
+  await playDialog(ghostLabel, [['Absolutely! Deal!', 1500]]);
+  await playDialog(deathLabel, [["*smirks* Let's go then !", 1500]]);
   deathEl.style.animationName = 'flippedFloat';
   deathEl.style.right = `-31.25rem`;
   ghostEl.style.transition = 'all 1.4s linear';
@@ -153,46 +153,47 @@ export async function playTutorialBegining() {
   deathEl.style.animation = 'incoming ease-in-out 2s forwards';
   await sleep(2300);
   deathEl.style.right = '12.5rem';
+  deathEl.style.transition = 'none';
   deathEl.style.bottom = 'calc(100vh - 23rem - 2rem)';
   deathEl.style.animation = 'float 4s 0.1s infinite';
   ghostLabel.classList.remove('br');
   ghostLabel.classList.add('rt');
   ghostLabel.style.right = '30rem';
   ghostLabel.style.top = '6rem';
-  ghostLabel.style.bottom = 'calc(100vh - 6rem)';
+  ghostLabel.style.bottom = 'auto';
   ghostLabel.style.left = 'auto';
   await playDialog(ghostLabel, [
-    { msg: "Alright! Here's the game!\n", time: 1000 },
-    { msg: 'You see that pile over there!\n', time: 1000 },
+    ["Alright! Here's the game!\n", 1000],
+    ['You see that pile over there!\n', 1000],
   ]);
 }
 
 export async function playPilePresentation() {
   await playDialog(ghostLabel, [
-    { msg: "It's filled with cards up to 7, and you're going to empty it.\n", time: 2000 },
+    ["It's filled with cards up to 7, and you're going to empty it.\n", 2000],
   ]);
   await playDialog(ghostLabel, [
-    { msg: 'But without your hand total ever reaching 13 or above.\n', time: 1000 },
-    { msg: 'Seems fair right ?', time: 2000 },
+    ['But without your hand total ever reaching 13 or above.\n', 1000],
+    ['Seems fair right ?', 2000],
   ]);
 }
 
 export async function playHandPresentation() {
   await playDialog(ghostLabel, [
-    { msg: 'Oh did I mention I added some specials malediction cards in here to spice things up ?\n', time: 2000 },
+    ['Oh did I mention I added some specials malediction cards in here to spice things up ?\n', 2000],
   ]);
   await playDialog(ghostLabel, [
-    { msg: 'What ?\n', time: 1000 },
-    { msg: "It's undoable ?\n", time: 1000 },
-    { msg: 'Alright! Here!', time: 1500 },
+    ['What ?\n', 1000],
+    ["It's undoable ?\n", 1000],
+    ['Alright! Here!', 1500],
   ]);
 }
 
 export async function playBenedictionHandPresentation() {
   await playDialog(ghostLabel, [
-    { msg: "I'll give you unlimited use of these benediction cards.\n", time: 1000 },
-    { msg: "I'm really feeling generous today!\n", time: 1000 },
-    { msg: "Well let's see how you do!", time: 2000 },
+    ["I'll give you unlimited use of these benediction cards.\n", 1000],
+    ["I'm really feeling generous today!\n", 1000],
+    ["Well let's see how you do!", 2000],
   ]);
 }
 
@@ -215,6 +216,8 @@ export function repositionAllElements(complete: boolean = false) {
 
 export async function playBadEndingAnimation(state: GameState) {
   state.ready = false;
+  getElementById('instruction').style.opacity = '0';
+  getElementById('card-remaining').style.opacity = '0';
   await sleep(800);
   ghostEl.style.transition = 'all .8s linear';
   deathEl.style.transition = 'all .8s linear';
@@ -237,18 +240,24 @@ export async function playBadEndingAnimation(state: GameState) {
   setGhostLabelPosition();
 
   await playDialog(deathLabel, [
-    { msg: 'Well ...\n', time: 1000 },
-    { msg: "Looks like luck wasn't on your side today.\n", time: 2000 },
+    ['Well ...\n', 1000],
+    ["Looks like luck wasn't on your side this time.\n", 2000],
   ]);
 
   await playDialog(deathLabel, [
-    { msg: "Alright, let's go then !\n", time: 1000 },
-    { msg: "We're going to find a nice and cozy place in hell for you!", time: 2000 },
+    ["he ", 500],
+    ["he ", 500],
+    ["he ", 500],
+    ["he ", 500],
+    ["he\n", 500],
+    ["*cough*\n", 500],
+    ["Alright, let's go then !\n", 1000],
+    ["We're going to find you a nice and cozy place in hell for you!\n", 2000],
   ]);
 
   await playDialog(ghostLabel, [
-    { msg: 'Oh man really !\n', time: 1000 },
-    { msg: 'Well at least I tried!', time: 2000 },
+    ['Oh man really !\n', 1000],
+    ['Well at least I tried!', 2000],
   ]);
   await leave();
 

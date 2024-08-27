@@ -69,11 +69,7 @@ export default class GameState {
     const benediction = getRandomBenediction(this.benedictionHand, this.cardById);
     benediction.pos = positions.benedictionPile();
     this.cardById[benediction.id] = benediction;
-    if (localStorage.getItem('adb-tuto') === 'done') {
-      this.refreshCardsVisuals();
-    } else {
-      this.initCardsVisuals();
-    }
+    this.initCardsVisuals();
   }
 
   resetBenediction() {
@@ -81,7 +77,12 @@ export default class GameState {
   }
 
   private async initCardsVisuals(): Promise<void> {
-    await playTutorialBegining();
+    const hasDoneTuto = localStorage.getItem('adb-tuto') === 'done';
+    if (!hasDoneTuto) {
+      await playTutorialBegining();
+    } else {
+      await showDeath();
+    }
     this.boardEl.innerHTML = '';
     Object.values(this.cardById).forEach(async (card) => {
       const handIndex = this.hand.indexOf(card.id);
@@ -108,7 +109,9 @@ export default class GameState {
 
     await sleep(1200);
     getElementById('card-remaining').style.opacity = '1';
-    await playPilePresentation();
+    if (!hasDoneTuto) {
+      await playPilePresentation();
+    }
     for (let i = 0; i < this.hand.length; i++) {
       const card = this.cardById[this.hand[i]];
       card.pos = positions.hand(i);
@@ -117,56 +120,29 @@ export default class GameState {
       await sleep(DRAW_ANIMATION_MS);
     }
     await sleep(DRAW_ANIMATION_MS);
-    await playHandPresentation();
+
+    if (!hasDoneTuto) {
+      await playHandPresentation();
+    }
     this.drawFullBenedictionHand();
-    await playBenedictionHandPresentation();
+    if (!hasDoneTuto) {
+      await playBenedictionHandPresentation();
+    }
     getElementById('instruction').style.opacity = '1';
     this.ready = true;
     localStorage.setItem('adb-tuto', 'done');
   }
 
-  private async refreshCardsVisuals(): Promise<void> {
-    await showDeath();
-    this.ready = false;
-    this.boardEl.innerHTML = '';
-    Object.values(this.cardById).forEach(async (card) => {
-      const handIndex = this.hand.indexOf(card.id);
-      const pileIndex = this.pile.indexOf(card.id);
-      const cardEl = createDomCard(card, card.id);
-
-      let listener;
-      if (handIndex !== -1) {
-        listener = () => this.onClickHandCard(card as TreasureCard);
-      }
-      if (pileIndex !== -1) {
-        card.inPile = true;
-        listener = () => this.onClickPile();
-      }
-      this.boardEl.appendChild(cardEl);
-      this.updateCard(card, pileIndex !== -1 ? pileIndex : 1, listener);
-    });
-
-    await sleep(DRAW_ANIMATION_MS);
-    for (let i = 0; i < this.hand.length; i++) {
-      const card = this.cardById[this.hand[i]];
-      card.pos = positions.hand(i);
-      card.hidden = false;
-      this.updateCard(card, 100);
-      await sleep(DRAW_ANIMATION_MS);
-    }
-    await sleep(DRAW_ANIMATION_MS);
-    this.drawFullBenedictionHand();
-    this.ready = true;
-  }
-
   // Listener functions
 
   private onClickPile(): void {
+    if (!this.ready) return;
     if (this.action !== ActionState.draw) return;
     this.drawPile();
   }
 
   private onClickBenediction(id: string): void {
+    if (!this.ready) return;
     const card = this.cardById[id] as BenedictionCard;
     if (this.action === ActionState.draw) {
       this.playBenediction(card);
@@ -446,7 +422,7 @@ export default class GameState {
     const benedictionPile = this.findBenedictionPile();
     benedictionPile.pos = positions.benedictionPile();
     this.updateCard(benedictionPile, 1);
-    this.refreshCardsVisuals();
+    this.initCardsVisuals();
     this.refreshInterface();
     this.refreshHand();
     this.refreshBenedictionHand();

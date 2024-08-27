@@ -1,4 +1,5 @@
 import GameState from './GameState';
+import { playBadEndingAnimation, repositionAllElements } from './animation';
 import Audio from './audio';
 
 const goodEnd = getElementById('goodEnd');
@@ -26,6 +27,12 @@ export async function checkEndGame(state: GameState): Promise<boolean> {
   if (state.getSum() >= 13) {
     await state.activateLastChance();
     if (state.getSum() >= 13) {
+      try {
+        // use to skip an async/await function
+        await playCancelablePromise(playBadEndingAnimation, state);
+      } catch {
+        repositionAllElements(true);
+      }
       displayElement(badEnd);
       return true;
     }
@@ -89,18 +96,18 @@ export async function displayMessage(el: HTMLElement, msg: string) {
   }
 }
 
-export async function playCancelablePromise(animationFn: Function): Promise<void> {
+export async function playCancelablePromise(animationFn: Function, state?: GameState): Promise<void> {
   const hookKeyboard = (event: KeyboardEvent) => {
-    if (event.code == "Space") {
+    if (event.code == 'Space') {
       canceled = true;
       document.removeEventListener('keydown', hookKeyboard);
     }
-  }
+  };
   const hookTactile = (event: TouchEvent) => {
     canceled = true;
     document.removeEventListener('touchstart', hookTactile);
-  }
+  };
   document.addEventListener('keydown', hookKeyboard);
   document.addEventListener('touchstart', hookTactile);
-  await animationFn();
+  await animationFn(state);
 }

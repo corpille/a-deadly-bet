@@ -1,7 +1,7 @@
 import { waitFor, resetEndState, checkEndGame, playCancelablePromise, getElementById } from './utils';
 import GameState, { ActionState } from './GameState';
 import Audio, { chords, melody } from './audio';
-import { label1El, label2El, playIntroAnimation } from './animation';
+import { deathLabel, ghostLabel, skipEl, playIntroAnimation, repositionAllElements } from './animation';
 
 let state: GameState;
 
@@ -12,7 +12,6 @@ window.addEventListener('resize', () => {
 });
 
 const menu = getElementById('menu');
-const scene = getElementById('scene');
 const game = getElementById('game');
 const mute = getElementById('mute');
 const isMute = localStorage.getItem('adb-mute') === 'off';
@@ -26,20 +25,17 @@ mute.addEventListener('click', async (event: MouseEvent) => {
 
 getElementById('start-button').addEventListener('click', async () => {
   menu.style.display = 'none';
-  scene.style.display = 'flex';
   Audio.getInstance().initAudioContext();
   try {
     // use to skip an async/await function
     await playCancelablePromise(playIntroAnimation);
   } catch {
-    label1El.style.opacity = '0';
-    label2El.style.opacity = '0';
+    repositionAllElements();
   }
   if (Object.keys(Audio.getInstance().intervals).length === 0) {
     Audio.getInstance().playBgMusic(chords);
     Audio.getInstance().playBgMusic(melody);
   }
-  scene.style.display = 'none';
   game.style.display = 'block';
   start();
 });

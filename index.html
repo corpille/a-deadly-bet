@@ -9,12 +9,10 @@
   </head>
   <body>
     <button id="mute"></button>
-    <div id="scene">
-      <span id="skip">Press space to skip</span>
-      <label class="text-label bl" id="label2"></label>
-      <div id="floor"></div>
-      <div id="ghost"></div>
-    </div>
+    <span id="skip">Press space to skip</span>
+    <label class="text-label" id="label2"></label>
+    <div id="floor"></div>
+    <div id="ghost"></div>
     <label class="text-label" id="label1"></label>
     <div id="death"></div>
     <div id="menu">
@@ -26,8 +24,15 @@
       <div id="board"></div>
       <div id="instruction"></div>
       <div id="card-remaining">Remaining: <span></span></div>
-      <div id="goodEnd">Congratulations</div>
-      <div id="badEnd">Game Over<button id="replay">Replay</button></div>
+      <div id="goodEnd">
+        <h1>You get to live another day!</h>
+        <h3>For now</h3>
+      </div>
+      <div id="badEnd">
+        <h1>You died!</h>
+        <h3>For real this time</h3>
+        <button id="replay">Try again</button>
+      </div>
       <div id="malediction"><button id="play-malediction">Accept your faith</button></div>
     </div>
   </body>

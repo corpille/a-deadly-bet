@@ -10,7 +10,13 @@ import {
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
 import { cardHeight, cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
-import { playBenedictionHandPresentation, playHandPresentation, playPilePresentation, playTutorialBegining, showDeath } from './animation';
+import {
+  playBenedictionHandPresentation,
+  playHandPresentation,
+  playPilePresentation,
+  playTutorialBegining,
+  showDeath,
+} from './animation';
 
 export enum ActionState {
   discard,
@@ -21,7 +27,6 @@ export enum ActionState {
 }
 
 export default class GameState {
-  cards: Card[];
   cardById: { [id: string]: Card };
   pile: string[];
   hand: string[];
@@ -117,7 +122,7 @@ export default class GameState {
     await playBenedictionHandPresentation();
     getElementById('instruction').style.opacity = '1';
     this.ready = true;
-    localStorage.setItem('adb-tuto', 'done')
+    localStorage.setItem('adb-tuto', 'done');
   }
 
   private async refreshCardsVisuals(): Promise<void> {
@@ -445,6 +450,7 @@ export default class GameState {
     this.refreshInterface();
     this.refreshHand();
     this.refreshBenedictionHand();
+    this.ready = true;
   }
 
   public refreshInterface(): void {

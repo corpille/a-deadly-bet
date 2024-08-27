@@ -42,10 +42,11 @@ html {
   top: 2rem;
   right: 2rem;
   font-size: 1.5rem;
+  opacity: 0;
 }
 
 #label1 {
-  left: calc(50% - 40rem / 2)
+  left: calc(50% - 40rem / 2);
 }
 
 .text-label {
@@ -64,9 +65,9 @@ html {
 .text-label::before {
   position: absolute;
   content: '';
-  display : inline-block;
-  height : 0;
-  width : 0;
+  display: inline-block;
+  height: 0;
+  width: 0;
 }
 
 .text-label.br,
@@ -80,24 +81,23 @@ html {
 .text-label.br::before {
   right: 13rem;
   bottom: -0.9rem;
-  border-top : 1rem solid white;
-  border-right : 1rem solid transparent;
+  border-top: 1rem solid white;
+  border-right: 1rem solid transparent;
 }
 
 .text-label.bl::before {
   left: 13rem;
   bottom: -0.9rem;
-  border-top : 1rem solid white;
-  border-left : 1rem solid transparent;
+  border-top: 1rem solid white;
+  border-left: 1rem solid transparent;
 }
 
 .text-label.rt::before {
   right: -0.9rem;
   top: 1rem;
-  border-bottom : 1rem solid white;
-  border-right : 1rem solid transparent;
+  border-bottom: 1rem solid white;
+  border-right: 1rem solid transparent;
 }
-
 
 #floor {
   position: absolute;
@@ -128,7 +128,7 @@ html {
   bottom: 2rem;
   height: 23rem;
   width: calc(23rem * var(--deathRatio));
-  transition: right 1s linear;
+  transition: all 0.8s linear;
   animation: float 4s 0.1s infinite;
 }
 
@@ -200,7 +200,7 @@ html {
   height: 100%;
   width: 100%;
 }
-#menu h1 {
+h1 {
   font-size: 4rem;
   text-transform: uppercase;
   margin-bottom: 0;
@@ -378,7 +378,6 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 4rem;
   top: 0;
   left: 100%;
   bottom: 0;
@@ -386,13 +385,6 @@ html {
   z-index: 100;
   opacity: 0;
   transition: opacity 0.3s;
-}
-
-#goodEnd {
-  color: green;
-}
-#badEnd {
-  color: red;
 }
 
 #malediction {

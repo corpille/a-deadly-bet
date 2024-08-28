@@ -1,19 +1,13 @@
 import GameState from './GameState';
-import { playBadEndingAnimation, playGoodEndingAnimation, repositionAllElements } from './animation';
 import Audio from './audio';
-
-const goodEnd = getElementById('goodEnd');
-const badEnd = getElementById('badEnd');
 
 export function getElementById(id: string): HTMLElement {
   return document.getElementById(id) as HTMLElement;
 }
 
-export function resetEndState(): void {
-  hideElement(goodEnd);
-  hideElement(badEnd);
+export function querySelector(selector: string): HTMLElement {
+  return document.querySelector(selector) as HTMLElement;
 }
-
 export function shuffleArray(arr: Array<any>): void {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -23,31 +17,6 @@ export function shuffleArray(arr: Array<any>): void {
   }
 }
 
-export async function checkEndGame(state: GameState): Promise<boolean> {
-  if (state.getSum() >= 13) {
-    await state.activateLastChance();
-    if (state.getSum() >= 13) {
-      try {
-        // use to skip an async/await function
-        await playCancelablePromise(playBadEndingAnimation, state);
-      } catch {
-        repositionAllElements(true);
-      }
-      displayElement(badEnd);
-      return true;
-    }
-  } else if (state.pile.length === 0) {
-    try {
-      // use to skip an async/await function
-      await playCancelablePromise(playGoodEndingAnimation, state);
-    } catch {
-      repositionAllElements(true);
-    }
-    displayElement(goodEnd);
-    return true;
-  }
-  return false;
-}
 
 export async function waitFor(condFn: Function): Promise<any> {
   return new Promise((resolve) => {

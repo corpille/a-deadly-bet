@@ -1,31 +1,35 @@
-import { waitFor, resetEndState, checkEndGame, playCancelablePromise, getElementById } from './utils';
+import { waitFor, playCancelablePromise, getElementById, hideElement } from './utils';
+import { checkEndGame, popupEl, buttonEl } from './endGame';
 import GameState, { ActionState } from './GameState';
 import Audio, { chords, melody } from './audio';
-import { deathLabel, ghostLabel, skipEl, playIntroAnimation, repositionAllElements } from './animation';
+import { playIntroAnimation, repositionAllElements } from './animation';
 
 let state: GameState;
+
+
+const game = getElementById('game');
+const mute = getElementById('mute');
+const isMute = localStorage.getItem('adb-mute') === 'off';
+mute.classList.toggle('off', isMute);
+
 
 window.addEventListener('resize', () => {
   if (state && state.ready) {
     state.refreshAll();
   }
 });
-
-const menu = getElementById('menu');
-const game = getElementById('game');
-const mute = getElementById('mute');
-const isMute = localStorage.getItem('adb-mute') === 'off';
-mute.classList.toggle('off', isMute);
-
 mute.addEventListener('click', async (event: MouseEvent) => {
   const off = mute.classList.toggle('off');
   localStorage.setItem('adb-mute', off ? 'off' : 'on');
   Audio.getInstance().updateVolume();
 });
+buttonEl.addEventListener('click', () => state ? play() : start());
+getElementById('play-malediction').addEventListener('click', () => state.playMalediction());
 
-getElementById('start-button').addEventListener('click', async () => {
-  menu.style.display = 'none';
+async function start() {
+  hideElement(popupEl);
   Audio.getInstance().initAudioContext();
+  mute.style.display = 'block';
   try {
     // use to skip an async/await function
     await playCancelablePromise(playIntroAnimation);
@@ -37,20 +41,13 @@ getElementById('start-button').addEventListener('click', async () => {
     Audio.getInstance().playBgMusic(melody);
   }
   game.style.display = 'block';
-  start();
-});
-
-document.querySelectorAll('.replay').forEach(el => el.addEventListener('click', start));
-getElementById('play-malediction').addEventListener('click', () => state.playMalediction());
-
-function reset(): void {
-  state = new GameState();
-  resetEndState();
+  play();
 }
 
-async function start(): Promise<any> {
+async function play(): Promise<any> {
   // init game
-  reset();
+  state = new GameState();
+  hideElement(popupEl);
   // Decision discard
   state.setActionState(ActionState.discard, 3);
   await waitFor(() => state.nbCardToAction === 0);

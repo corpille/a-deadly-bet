@@ -214,7 +214,7 @@ export function repositionAllElements(complete: boolean = false) {
   }
 }
 
-export async function playBadEndingAnimation(state: GameState) {
+async function initStop(state: GameState) {
   state.ready = false;
   getElementById('instruction').style.opacity = '0';
   getElementById('card-remaining').style.opacity = '0';
@@ -226,6 +226,9 @@ export async function playBadEndingAnimation(state: GameState) {
     cardEl.style.left = `-${cardWidth()}px`;
     cardEl.style.top = `-${cardHeight()}px`;
   });
+}
+
+async function initEndScene() {
   skipEl.style.opacity = '1';
   floorEl.style.opacity = '1';
   floorEl.style.bottom = '0';
@@ -238,7 +241,11 @@ export async function playBadEndingAnimation(state: GameState) {
   await sleep(800);
   setDeathLabelPosition();
   setGhostLabelPosition();
+}
 
+export async function playBadEndingAnimation(state: GameState) {
+  await initStop(state);
+  await initEndScene();
   await playDialog(deathLabel, [
     ['Well ...\n', 1000],
     ["Looks like luck wasn't on your side this time.\n", 2000],
@@ -258,6 +265,36 @@ export async function playBadEndingAnimation(state: GameState) {
   await playDialog(ghostLabel, [
     ['Oh man really !\n', 1000],
     ['Well at least I tried!', 2000],
+  ]);
+  await leave();
+
+  repositionAllElements(true);
+}
+
+
+
+export async function playGoodEndingAnimation(state: GameState) {
+  await initStop(state);
+  await initEndScene();
+  await playDialog(ghostLabel, [
+    ["Let's goooooo!!!!\n", 1000],
+    ["Take that you stupid death!\n", 2500],
+  ]);
+  await playDialog(ghostLabel, [
+    ["Ummmh ... Sorry.\n", 1000],
+    ["I mean I won your game can I go back now?\n", 2500],
+  ]);
+
+  await playDialog(deathLabel, [
+    ["*sight*\n", 1000],
+    ["Fine, you get 13 more days to live after that I'll be back to reap you !\n", 2000],
+  ]);
+
+  await playDialog(ghostLabel, [
+    ['Hell yeah !\n', 1500],
+  ]);
+  await playDialog(deathLabel, [
+    ["Hurry up I don't have all day!\n", 2000],
   ]);
   await leave();
 

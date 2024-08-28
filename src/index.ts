@@ -40,7 +40,7 @@ getElementById('start-button').addEventListener('click', async () => {
   start();
 });
 
-getElementById('replay').addEventListener('click', start);
+document.querySelectorAll('.replay').forEach(el => el.addEventListener('click', start));
 getElementById('play-malediction').addEventListener('click', () => state.playMalediction());
 
 function reset(): void {

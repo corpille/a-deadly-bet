@@ -1,5 +1,5 @@
 import GameState from './GameState';
-import { playBadEndingAnimation, repositionAllElements } from './animation';
+import { playBadEndingAnimation, playGoodEndingAnimation, repositionAllElements } from './animation';
 import Audio from './audio';
 
 const goodEnd = getElementById('goodEnd');
@@ -37,6 +37,12 @@ export async function checkEndGame(state: GameState): Promise<boolean> {
       return true;
     }
   } else if (state.pile.length === 0) {
+    try {
+      // use to skip an async/await function
+      await playCancelablePromise(playGoodEndingAnimation, state);
+    } catch {
+      repositionAllElements(true);
+    }
     displayElement(goodEnd);
     return true;
   }

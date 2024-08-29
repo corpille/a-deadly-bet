@@ -3,7 +3,7 @@ import Audio, { chords, loopLength, melody } from './audio';
 import GameState from './GameState';
 import { cardHeight, cardWidth } from './config';
 
-const deathEl = getElementById('death');
+export const deathEl = getElementById('death');
 const floorEl = getElementById('floor');
 const ghostEl = getElementById('ghost');
 export const skipEl = getElementById('skip');
@@ -146,44 +146,56 @@ export async function playTutorialBegining() {
   deathEl.style.transition = 'none';
   deathEl.style.bottom = 'calc(100vh - 23rem - 2rem)';
   deathEl.style.animation = 'float 4s 0.1s infinite';
-  ghostLabel.classList.remove('br');
-  ghostLabel.classList.add('rt');
-  ghostLabel.style.right = '30rem';
-  ghostLabel.style.top = '6rem';
-  ghostLabel.style.bottom = 'auto';
-  ghostLabel.style.left = 'auto';
-  await playDialog(ghostLabel, [
+  deathLabel.classList.remove('br', 'bl');
+  deathLabel.classList.add('rt');
+  deathLabel.style.right = '30rem';
+  deathLabel.style.top = '6rem';
+  deathLabel.style.bottom = 'auto';
+  deathLabel.style.left = 'auto';
+  await playDialog(deathLabel, [
     ["Alright! Here's the game!\n", 1000],
-    ['You see that pile over there!\n', 1000],
+    ['You see these 2 piles over there!\n', 1000],
   ]);
 }
 
 export async function playPilePresentation() {
-  await playDialog(ghostLabel, [
-    ["It's filled with cards up to 7, and you're going to empty it.\n", 2000],
+  await playDialog(deathLabel, [
+    ["The left one is filled with 4 set of cards up to 6, and you're going to empty it.\n", 2000],
+    ["The right one is a pile of benedictions cards.\n", 2000],
+    ["Your goal is to empty the left pile.\n", 3000],
   ]);
-  await playDialog(ghostLabel, [
+  await playDialog(deathLabel, [
     ['But without your hand total ever reaching 13 or above.\n', 1000],
     ['Seems fair right ?', 2000],
   ]);
 }
 
 export async function playHandPresentation() {
-  await playDialog(ghostLabel, [
+  await playDialog(deathLabel, [
     ['Oh did I mention I added some specials malediction cards in here to spice things up ?\n', 2000],
   ]);
-  await playDialog(ghostLabel, [
-    ['What ?\n', 1000],
-    ["It's undoable ?\n", 1000],
+  await playDialog(deathLabel, [
+    ["What ? It's undoable ?\n", 1000],
     ['Alright! Here!', 1500],
   ]);
 }
 
 export async function playBenedictionHandPresentation() {
-  await playDialog(ghostLabel, [
-    ["I'll give you unlimited use of these benediction cards.\n", 1000],
-    ["I'm really feeling generous today!\n", 1000],
-    ["Well let's see how you do!", 2000],
+  await playDialog(deathLabel, [
+    ["I'll give you 2 benediction cards and 1 extra credit.\n", 1500],
+    ["Boy! I'm really feeling generous today!\n", 2500],
+  ]);
+  await playDialog(deathLabel, [
+    ["Benediction rules are simple.\n", 2000],
+    ["Each green card discarded give you 1 credit.\n", 2000],
+    ["Each red card discarded nothing.\n", 3000],
+  ]);
+  await playDialog(deathLabel, [
+    ["If you bring a card to 0 or under you gain 1 extra credit\n", 2000],
+    ["If you have enough credits, cards will be automatically drawn\n", 4000],
+  ]);
+  await playDialog(deathLabel, [
+    ["Alright let's see how you do!\n", 2500],
   ]);
 }
 
@@ -196,6 +208,7 @@ export function repositionAllElements(complete: boolean = false) {
   ghostEl.style.opacity = '0';
   ghostEl.style.bottom = '2rem';
   ghostEl.style.left = '-2rem';
+  ghostEl.style.animation = 'float 4s 0.1s infinite';
   if (complete) {
     deathLabel.style.opacity = '0';
     deathEl.style.transition = 'none';

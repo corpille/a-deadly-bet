@@ -13,7 +13,7 @@ mute.classList.toggle('off', isMute);
 
 window.addEventListener('resize', () => {
   if (state && state.ready) {
-    //state.refreshAll();
+    state.refreshAll();
   }
 });
 mute.addEventListener('click', async (event: MouseEvent) => {
@@ -31,7 +31,6 @@ async function start() {
   mute.style.display = 'block';
   try {
     // use to skip an async/await function
-    throw 1;
     await playCancelablePromise(playIntroAnimation);
   } catch {
     repositionAllElements();

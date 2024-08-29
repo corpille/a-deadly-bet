@@ -11,6 +11,7 @@ import {
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
 import { cardHeight, cardWidth, DRAW_ANIMATION_MS, INITIAL_DRAW, NB_BENEDICTION_CARD, positions, rem } from './config';
 import {
+  deathEl,
   playBenedictionHandPresentation,
   playHandPresentation,
   playPilePresentation,
@@ -77,7 +78,7 @@ export default class GameState {
   }
 
   private async initCardsVisuals(): Promise<void> {
-    const hasDoneTuto = localStorage.getItem('adb-tuto') === 'done';
+    const hasDoneTuto = localStorage.getItem('adb-tutorial') === 'done';
     if (!hasDoneTuto) {
       await playTutorialBegining();
     } else {
@@ -130,7 +131,7 @@ export default class GameState {
     }
     getElementById('instruction').style.opacity = '1';
     this.ready = true;
-    localStorage.setItem('adb-tuto', 'done');
+    localStorage.setItem('adb-tutorial', 'done');
   }
 
   // Listener functions
@@ -425,8 +426,8 @@ export default class GameState {
       card.hidden = false;
       return card;
     });
-    cards[0].pos.left -= cardWidth() + 16;
-    cards[2].pos.left += cardWidth() + 16;
+    cards[0].pos.left -= cardWidth() + rem(1);
+    cards[2].pos.left += cardWidth() + rem(1);
     cards.forEach((card) =>
       this.updateCard(card, 99, () => {
         this.chosenCardId = card.id;
@@ -446,6 +447,9 @@ export default class GameState {
   // Visual functions
 
   public refreshAll() {
+    this.ready = false;
+    deathEl.style.transition = 'none';
+    Object.keys(this.cardById).forEach(id => getElementById(id).style.transition = 'none')
     this.pile.forEach((id, index) => {
       this.cardById[id].pos = positions.pile();
       this.updateCard(this.cardById[id], index + 1);
@@ -457,10 +461,15 @@ export default class GameState {
     const benedictionPile = this.findBenedictionPile();
     benedictionPile.pos = positions.benedictionPile();
     this.updateCard(benedictionPile, 1);
-    this.initCardsVisuals();
     this.refreshInterface();
     this.refreshHand();
     this.refreshBenedictionHand();
+    setTimeout(() => {
+      deathEl.style.transition = 'all .8s linear';
+      Object.keys(this.cardById).forEach(id =>
+        getElementById(id).style.transition = 'top 0.8s,left 0.8s,transform 0.2s'
+      )
+    }, 100);
     this.ready = true;
   }
 
@@ -526,6 +535,8 @@ export default class GameState {
     cardEl.style.zIndex = zIndex.toString();
     cardEl.style.top = `${positions.top}px`;
     cardEl.style.left = `${positions.left}px`;
+    cardEl.style.width = `${cardWidth()}px`;
+    cardEl.style.height = `${cardHeight()}px`;
     cardEl.classList.toggle('locked', card.locked);
     cardEl.classList.toggle('hidden', card.hidden);
     cardEl.classList.toggle('pile', card.inPile);
@@ -564,7 +575,7 @@ export default class GameState {
   // Utility functions
 
   private addBenedictionCredit(nb: number = 1) {
-    this.benedictionCredit = Math.max(Math.min(this.benedictionCredit + nb, 5), 0);
+    this.benedictionCredit = Math.max(Math.min(this.benedictionCredit + nb, 6), 0);
   }
 
   private findBenedictionPile() {

@@ -1,10 +1,11 @@
-const rem = (nb: number) => Math.round(maxWidth() / 100 * 0.833333) * nb;
+export const rem = (nb: number) => Math.round(maxWidth() / 100 * 0.833333) * nb;
 export const maxHeight = () => window.innerHeight;
 export const maxWidth = () => window.innerWidth;
 export const cardHeight = () => rem(15);
 export const cardWidth = () => cardHeight() * 0.65;
 
 
+export const INITIAL_DRAW = 3;
 export const DRAW_ANIMATION_MS = 200;
 export const NB_BENEDICTION_CARD = 2;
 
@@ -40,7 +41,7 @@ export const maledictions = [
 ];
 
 export const benedictions = [
-  { name: 'Evasion', desc: 'Discard a card in your hand', effect: 'evasion', weight: 4 },
+  { name: 'Evasion', desc: 'Reduce a card value to 0', effect: 'evasion', weight: 4 },
   {
     name: 'Protection I',
     desc: 'Lower a choosen card by 1. If it reaches 0, the card is discarded',
@@ -74,17 +75,17 @@ export const benedictions = [
     effect: 'future-vision',
     weight: 2,
   },
-  {
-    name: 'Revelation',
-    desc: 'Reveal a hidden card in you hand and lower it by 2. If it reaches 0, the card is discarded',
-    effect: 'revelation',
-    weight: 5,
-  },
+  // {
+  //   name: 'Revelation',
+  //   desc: 'Reveal a hidden card in you hand and lower it by 2. If it reaches 0, the card is discarded',
+  //   effect: 'revelation',
+  //   weight: 5,
+  // },
   {
     name: 'Second wind',
     desc: 'Shield you from loosing but remove all of your cards',
     effect: 'second-wind',
     weight: 1,
   },
-  { name: '13th taslisman', desc: 'Cancel a malediction card', effect: '13th-talisman', weight: 4 },
+  { name: '13th taslisman', desc: 'Cancel a malediction card or discard to gain 2 credit', effect: '13th-talisman', weight: 4 },
 ];

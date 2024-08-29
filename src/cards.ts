@@ -21,8 +21,8 @@ export class BaseCard {
 export class TreasureCard extends BaseCard {
   val: number;
   defaultVal: number;
-  constructor(val: number) {
-    super('t');
+  constructor(val: number, effect: string) {
+    super('t' + effect);
     this.val = val;
     this.defaultVal = val;
   }
@@ -58,13 +58,13 @@ export class BenedictionCard extends BaseCard {
 
 export type Card = TreasureCard | MaledictionCard | BenedictionCard;
 
-export function createDomCard(card: Card, id: string): HTMLElement {
+export function createDomCard(card: Card): HTMLElement {
   const cardEl = document.createElement('div') as HTMLElement;
   cardEl.classList.add('card', card.type);
   if (!card.locked) {
     cardEl.classList.add('locked');
   }
-  cardEl.setAttribute('id', id);
+  cardEl.setAttribute('id', card.id);
   cardEl.style.height = `${cardHeight()}px`;
   cardEl.style.width = `${cardWidth()}px`;
   const cardInnerEl = document.createElement('div') as HTMLElement;
@@ -80,10 +80,8 @@ export function createDomCard(card: Card, id: string): HTMLElement {
   const desc = document.createElement('p') as HTMLElement;
   desc.innerText = card instanceof TreasureCard ? card.val.toString() : card.desc;
 
-  cardFrontEl.append(label);
-  cardFrontEl.append(desc);
-  cardInnerEl.append(cardFrontEl);
-  cardInnerEl.append(cardBackEl);
+  cardFrontEl.append(label, desc);
+  cardInnerEl.append(cardFrontEl, cardBackEl);
 
   cardEl.append(cardInnerEl);
   return cardEl;
@@ -111,8 +109,8 @@ function getWeightedRandomBenediction(availableBenedictions: any[]): Benediction
 export function getRandomBenediction(benedictionHand: string[], cardByid: { [id: string]: Card }): BenedictionCard {
   const benedictionHandEffect = benedictionHand
     .filter((v) => v !== 'empty')
-    .map((id) => (cardByid[id] as BenedictionCard).effect);
-  const availableBenediction = benedictions.filter(({ effect }) => !benedictionHandEffect.includes(effect));
+    .map((id) => (cardByid[id] as BenedictionCard).name);
+  const availableBenediction = benedictions.filter(({ name }) => !benedictionHandEffect.includes(name));
   return getWeightedRandomBenediction(availableBenediction);
 }
 
@@ -120,9 +118,9 @@ export function getTreasureCards(): Array<TreasureCard> {
   const availableCards: Array<TreasureCard> = [];
   for (let i = 0; i < 4; i++) {
     // nb set
-    for (let j = 0; j < 7; j++) {
+    for (let j = 0; j < 6; j++) {
       // max value
-      availableCards.push(new TreasureCard(j + 1));
+      availableCards.push(new TreasureCard(j + 1, i % 2 ? 'b' : 'm'));
     }
   }
   return availableCards;

@@ -1,4 +1,4 @@
-import { sleep, displayMessage, getRandomIndex, getElementById } from './utils';
+import { sleep, playDialog, getRandomIndex, getElementById } from './utils';
 import Audio, { chords, loopLength, melody } from './audio';
 import GameState from './GameState';
 import { cardHeight, cardWidth } from './config';
@@ -22,16 +22,6 @@ const deaths = [
   'crushed by a pile of my collectioned snow globes',
 ];
 
-async function playDialog(el: HTMLElement, lines: [string, number][]) {
-  el.innerHTML = '';
-  el.style.opacity = '1';
-  for (let i = 0; i < lines.length; i++) {
-    await displayMessage(el, lines[i][0]);
-    await sleep(lines[i][1]);
-  }
-  el.style.opacity = '0';
-  await sleep(300);
-}
 
 function setGhostLabelPosition() {
   ghostLabel.style.left = `${ghostEl.offsetLeft + ghostEl.clientWidth / 2 - ghostLabel.clientWidth / 2}px`;
@@ -218,6 +208,7 @@ async function initStop(state: GameState) {
   state.ready = false;
   getElementById('instruction').style.opacity = '0';
   getElementById('card-remaining').style.opacity = '0';
+  getElementById('credits').style.opacity = '0';
   await sleep(800);
   ghostEl.style.transition = 'all .8s linear';
   deathEl.style.transition = 'all .8s linear';

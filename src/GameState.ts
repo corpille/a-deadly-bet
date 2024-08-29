@@ -9,7 +9,7 @@ import {
   getTreasureCards,
 } from './cards';
 import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
-import { cardHeight, cardWidth, DRAW_ANIMATION_MS, NB_BENEDICTION_CARD, positions } from './config';
+import { cardHeight, cardWidth, DRAW_ANIMATION_MS, INITIAL_DRAW, NB_BENEDICTION_CARD, positions, rem } from './config';
 import {
   playBenedictionHandPresentation,
   playHandPresentation,
@@ -35,9 +35,9 @@ export default class GameState {
   action: ActionState;
   nbCardToAction: number = 0;
   currentMalediction?: MaledictionCard;
-  activeMaledictions: MaledictionCard[];
   chosenCardId?: string;
   ready: boolean = false;
+  benedictionCredit: number;
 
   private boardEl = getElementById('board');
   private cardRemainingEl = document.querySelector('#card-remaining span') as HTMLElement;
@@ -48,13 +48,13 @@ export default class GameState {
     this.pile = [];
     this.cardById = {};
     this.discardedPile = [];
+    this.benedictionCredit = 3;
     this.chosenCardId = undefined;
-    this.activeMaledictions = [];
     this.resetBenediction();
     const cards: Card[] = getTreasureCards();
     shuffleArray(cards);
 
-    this.hand = cards.slice(cards.length - 5).map((card) => card.id);
+    this.hand = cards.slice(cards.length - INITIAL_DRAW).map((card) => card.id);
 
     cards.push(...getMaledictionCards());
     shuffleArray(cards);
@@ -89,7 +89,7 @@ export default class GameState {
       const pileIndex = this.pile.indexOf(card.id);
       const pos = card.pos;
       card.pos = { top: -cardHeight(), left: -cardWidth() };
-      const cardEl = createDomCard(card, card.id);
+      const cardEl = createDomCard(card);
       this.boardEl.appendChild(cardEl);
       this.updateCard(card, pileIndex !== -1 ? pileIndex : 1);
 
@@ -124,7 +124,7 @@ export default class GameState {
     if (!hasDoneTuto) {
       await playHandPresentation();
     }
-    this.drawFullBenedictionHand();
+    await this.drawFullBenedictionHand();
     if (!hasDoneTuto) {
       await playBenedictionHandPresentation();
     }
@@ -177,6 +177,11 @@ export default class GameState {
   }
 
   private drawBenediction(): void {
+    if (this.benedictionCredit === 0) {
+      return;
+    }
+    this.addBenedictionCredit(-1);
+    this.refreshCredits();
     const card = this.findBenedictionPile();
     const index = this.benedictionHand.indexOf('empty');
     if (index === -1) return;
@@ -188,18 +193,29 @@ export default class GameState {
     const benedictionCard = getRandomBenediction(this.benedictionHand, this.cardById);
     benedictionCard.pos = positions.benedictionPile();
     this.cardById[benedictionCard.id] = benedictionCard;
-    const cardEl = createDomCard(benedictionCard, benedictionCard.id);
+    const cardEl = createDomCard(benedictionCard);
     this.boardEl.append(cardEl);
     this.updateCard(benedictionCard, 1, null);
   }
 
-  private findFirstTreasureCardIdOnPile() {
-    const index = this.pile.findLastIndex((id) => this.cardById[id] instanceof TreasureCard);
+  private findCardIdOnPileWithCondition(condFn: (id: string) => boolean) {
+    const index = this.pile.findLastIndex(condFn);
+    if (index === -1) return;
     return this.pile.splice(index, 1)[0];
   }
 
-  private drawPile(onlyTreasure: boolean = false, options?: any): void {
-    let cardId = onlyTreasure ? this.findFirstTreasureCardIdOnPile() : this.pile.pop();
+  private drawPile(options?: any, withFilter: Boolean = false, condFn?: (id: string) => boolean): void {
+    let cardId;
+    if (withFilter) {
+      let conditionFn = condFn;
+      if (!conditionFn) {
+        conditionFn = (id: string) => this.cardById[id] instanceof TreasureCard;
+      }
+      cardId = this.findCardIdOnPileWithCondition(conditionFn)
+    }
+    if (!cardId) {
+      cardId = this.pile.pop()
+    }
     if (!cardId) return;
     const card = this.cardById[cardId];
     card.hidden = options?.hidden ?? false;
@@ -221,6 +237,16 @@ export default class GameState {
   }
 
   private discardCard(card: Card): void {
+    if (card instanceof TreasureCard) {
+      if (card.type === 'tb') {
+        this.addBenedictionCredit();
+      }
+      if (card.val <= 0) {
+        this.addBenedictionCredit();
+      }
+      this.refreshCredits();
+    }
+
     this.discardedPile.push(card.id);
     card.hidden = true;
     card.locked = false;
@@ -254,17 +280,19 @@ export default class GameState {
 
     switch (this.currentMalediction.effect) {
       case 'past-weight':
-        this.drawPile(true, { hidden: true });
+        this.drawPile({ hidden: true }, true);
         break;
       case 'growing-shadow':
         if (randomHandIndex === -1) return;
         const card = this.cardById[this.hand[randomHandIndex]] as TreasureCard;
-        card.val += 2;
-        this.updateCard(card, 1);
-        await this.playValueChangeAnimation(card.id);
+        if (card) {
+          card.val += 2;
+          this.updateCard(card, 1);
+          await this.playValueChangeAnimation(card.id);
+        }
         break;
       case 'unavoidable-pain':
-        this.drawPile(true, { locked: true });
+        this.drawPile({ locked: true }, true);
         break;
       case '13th-rage':
         this.hand.forEach((id) => {
@@ -276,13 +304,14 @@ export default class GameState {
         this.refreshHand();
         break;
       case 'false-hope':
-        if (randomHandIndex === -1) return;
+        if (randomHandIndex === -1 || !this.hand[randomHandIndex]) return;
         this.discardCardFrom(this.cardById[this.hand[randomHandIndex]], this.hand);
         this.drawPile();
         break;
       case 'destiny-fracture':
         if (randomHandIndex === -1) return;
         const fractureCard = this.cardById[this.hand[randomHandIndex]] as TreasureCard;
+        if (!fractureCard) break;
         fractureCard.val = Math.floor(fractureCard.val / 2);
         this.updateCard(fractureCard, 1);
         await this.playValueChangeAnimation(fractureCard.id);
@@ -305,18 +334,20 @@ export default class GameState {
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
     if (['second-wind'].includes(card.effect)) return;
+    if ((card.effect === 'lucky-switch' && !this.hand.length)) {
+      return;
+    }
     if (!['revelation', 'future-vision'].includes(card.effect)) {
       card.pos = positions.center();
       this.updateCard(card, 1, null);
     }
-    if (card.effect === '13th-talisman' && !this.currentMalediction) {
-      return;
-    }
     switch (card.effect) {
       case 'evasion':
-        this.setActionState(ActionState.discard);
-        await waitFor(() => this.nbCardToAction === 0);
-        this.setActionState(ActionState.draw);
+        const chosenEvadedCard = (await this.chooseCard(ActionState.chooseTreasure)) as TreasureCard;
+        chosenEvadedCard.val = 0;
+        this.updateCard(chosenEvadedCard, 1);
+        await this.playValueChangeAnimation(chosenEvadedCard.id);
+        this.discardCardFrom(chosenEvadedCard, this.hand);
         break;
       case 'protection':
         const chosenTreasureCard = (await this.chooseCard(ActionState.chooseTreasure)) as TreasureCard;
@@ -331,14 +362,19 @@ export default class GameState {
       case 'lucky-switch':
         const chosenCard = await this.chooseCard(ActionState.choose);
         this.discardCardFrom(chosenCard, chosenCard instanceof TreasureCard ? this.hand : this.benedictionHand);
+        console.log(chosenCard.type);
         if (chosenCard instanceof TreasureCard) {
-          this.drawPile(true);
+          this.drawPile({}, true, (id: string) => this.cardById[id].type === chosenCard.type);
         } else {
+          this.addBenedictionCredit();
           this.drawBenediction();
         }
         break;
       case '13th-talisman':
-        if (!this.currentMalediction) return;
+        if (!this.currentMalediction) {
+          this.addBenedictionCredit(2);
+          break;
+        }
         await this.playBenedictionUseAnimation(card);
         hideElement(this.maledictionEl);
         this.discardCard(this.currentMalediction);
@@ -405,7 +441,6 @@ export default class GameState {
     await sleep(DRAW_ANIMATION_MS);
     this.drawBenediction();
     await sleep(DRAW_ANIMATION_MS);
-    this.drawBenediction();
   }
 
   // Visual functions
@@ -427,6 +462,14 @@ export default class GameState {
     this.refreshHand();
     this.refreshBenedictionHand();
     this.ready = true;
+  }
+
+  public refreshCredits() {
+    const credits = getElementById('credits');
+    credits.style.opacity = '1';
+    for (let i = 0; i < 5; i++) {
+      getElementById('c' + i).classList.toggle('active', this.benedictionCredit > i)
+    }
   }
 
   public refreshInterface(): void {
@@ -520,6 +563,10 @@ export default class GameState {
 
   // Utility functions
 
+  private addBenedictionCredit(nb: number = 1) {
+    this.benedictionCredit = Math.max(Math.min(this.benedictionCredit + nb, 5), 0);
+  }
+
   private findBenedictionPile() {
     return Object.values(this.cardById).find(
       (c) =>
@@ -572,6 +619,7 @@ export default class GameState {
     });
     this.resetBenediction();
     this.hand = [];
+    this.benedictionCredit = 3;
     await sleep(800);
     await this.drawFullBenedictionHand();
   }

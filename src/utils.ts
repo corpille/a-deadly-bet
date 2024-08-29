@@ -46,11 +46,14 @@ export function getRandomIndex(arr: Array<any>): number {
 
 let canceled = false;
 
+export function resetCancel() {
+  canceled = false;
+}
+
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (canceled) {
-        canceled = false;
         reject();
       } else {
         resolve();
@@ -59,12 +62,25 @@ export function sleep(ms: number): Promise<void> {
   });
 }
 
+export async function playDialog(el: HTMLElement, lines: [string, number][]) {
+  el.innerHTML = '';
+  el.style.opacity = '1';
+  for (let i = 0; i < lines.length; i++) {
+    if (canceled) {
+      throw 1;
+    }
+    await displayMessage(el, lines[i][0]);
+    await sleep(lines[i][1]);
+  }
+  el.style.opacity = '0';
+  await sleep(300);
+}
+
 export async function displayMessage(el: HTMLElement, msg: string) {
   for (let i = 0; i < msg.length; i++) {
     el.innerHTML += msg[i] === '\n' ? '<br/>' : msg[i];
     Audio.getInstance().playTS();
     if (canceled) {
-      canceled = false;
       throw 1;
     }
     await sleep(35);
@@ -72,6 +88,7 @@ export async function displayMessage(el: HTMLElement, msg: string) {
 }
 
 export async function playCancelablePromise(animationFn: Function, state?: GameState): Promise<void> {
+  resetCancel();
   const hookKeyboard = (event: KeyboardEvent) => {
     if (event.code == 'Space') {
       canceled = true;

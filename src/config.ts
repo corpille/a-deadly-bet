@@ -9,12 +9,12 @@ export const DRAW_ANIMATION_MS = 200;
 export const NB_BENEDICTION_CARD = 2;
 
 export const positions = {
-  pile: () => ({ top: rem(6), left: rem(1) }),
-  benedictionPile: () => ({ top: rem(6), left: rem(1) + (cardWidth() + rem(1)) }),
-  discard: () => ({ top: rem(6), left: rem(1) + (cardWidth() + rem(1)) * 2 }),
+  pile: () => ({ top: rem(1), left: rem(7) }),
+  benedictionPile: () => ({ top: rem(1), left: rem(7) + (cardWidth() + rem(1)) }),
+  discard: () => ({ top: rem(1), left: rem(7) + (cardWidth() + rem(1)) * 2 }),
   hand: (index: number) => ({
     top: maxHeight() - cardHeight() - rem(1),
-    left: rem(1) + (cardWidth() + rem(1)) * index,
+    left: rem(7) + (cardWidth() + rem(1)) * index,
   }),
   benedictionHand: (index: number) => ({
     top: maxHeight() - cardHeight() - rem(1),

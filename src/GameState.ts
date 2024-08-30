@@ -8,7 +8,16 @@ import {
   getRandomBenediction,
   getTreasureCards,
 } from './cards';
-import { shuffleArray, waitFor, displayElement, hideElement, getRandomIndex, sleep, getElementById } from './utils';
+import {
+  shuffleArray,
+  waitFor,
+  displayElement,
+  hideElement,
+  getRandomIndex,
+  sleep,
+  getElementById,
+  querySelector,
+} from './utils';
 import { cardHeight, cardWidth, DRAW_ANIMATION_MS, INITIAL_DRAW, NB_BENEDICTION_CARD, positions, rem } from './config';
 import {
   deathEl,
@@ -41,9 +50,11 @@ export default class GameState {
   benedictionCredit: number;
 
   private boardEl = getElementById('board');
-  private cardRemainingEl = document.querySelector('#card-remaining span') as HTMLElement;
+  private cardRemainingEl = querySelector('#card-remaining span');
   private instructionEl = getElementById('instruction');
   private maledictionEl = getElementById('malediction');
+  private sidebarEl = getElementById('sidebar');
+  private indexEl = getElementById('index');
 
   constructor() {
     this.pile = [];
@@ -70,6 +81,7 @@ export default class GameState {
     const benediction = getRandomBenediction(this.benedictionHand, this.cardById);
     benediction.pos = positions.benedictionPile();
     this.cardById[benediction.id] = benediction;
+    this.sidebarEl.classList.add('active');
     this.initCardsVisuals();
   }
 
@@ -132,6 +144,8 @@ export default class GameState {
     getElementById('instruction').style.opacity = '1';
     this.ready = true;
     localStorage.setItem('adb-tutorial', 'done');
+    await sleep(DRAW_ANIMATION_MS);
+    this.refreshInterface();
   }
 
   // Listener functions
@@ -228,6 +242,7 @@ export default class GameState {
     } else if (card instanceof MaledictionCard) {
       this.displayMalediction(card);
     }
+    this.refreshInterface();
   }
 
   private addCardToHand(card: TreasureCard): void {
@@ -503,6 +518,7 @@ export default class GameState {
         break;
     }
     this.instructionEl.innerText = text;
+    this.indexEl.style.height = `${(100 / 13) * Math.max(13 - this.getSum(), 0)}%`;
   }
 
   private async displayMalediction(card: MaledictionCard): Promise<void> {
@@ -522,6 +538,7 @@ export default class GameState {
       card.pos = positions.hand(index);
       this.updateCard(card, 1);
     });
+    this.refreshInterface();
   }
 
   private refreshBenedictionHand(): void {
@@ -593,7 +610,6 @@ export default class GameState {
   public setActionState(state: ActionState, nbCard: number = 1): void {
     this.nbCardToAction = nbCard;
     this.action = state;
-    this.refreshInterface();
   }
 
   public getSum(): number {

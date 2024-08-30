@@ -250,6 +250,7 @@ export default class GameState {
     this.hand.push(card.id);
     card.inDiscard = false;
     this.updateCard(card, 98, () => this.onClickHandCard(card));
+    this.refreshInterface();
   }
 
   private discardCard(card: Card): void {
@@ -518,7 +519,7 @@ export default class GameState {
         break;
     }
     this.instructionEl.innerText = text;
-    this.indexEl.style.height = `${(100 / 13) * Math.max(13 - this.getSum(), 0)}%`;
+    this.indexEl.style.height = `${(100 / 13) * Math.max(13 - this.getSum(true), 0)}%`;
   }
 
   private async displayMalediction(card: MaledictionCard): Promise<void> {
@@ -612,10 +613,10 @@ export default class GameState {
     this.action = state;
   }
 
-  public getSum(): number {
+  public getSum(noHidden: boolean = false): number {
     return this.hand.reduce((r, id: string) => {
       const card = this.cardById[id] as TreasureCard;
-      return r + card.val;
+      return r + (noHidden && card.hidden ? 0 : card.val);
     }, 0);
   }
 

@@ -212,10 +212,10 @@ export default class GameState {
       if (!conditionFn) {
         conditionFn = (id: string) => this.cardById[id] instanceof TreasureCard;
       }
-      cardId = this.findCardIdOnPileWithCondition(conditionFn)
+      cardId = this.findCardIdOnPileWithCondition(conditionFn);
     }
     if (!cardId) {
-      cardId = this.pile.pop()
+      cardId = this.pile.pop();
     }
     if (!cardId) return;
     const card = this.cardById[cardId];
@@ -330,12 +330,13 @@ export default class GameState {
         break;
     }
     this.setActionState(ActionState.draw);
+    delete this.currentMalediction;
     this.nbCardToAction--;
   }
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
     if (['second-wind'].includes(card.effect)) return;
-    if ((card.effect === 'lucky-switch' && !this.hand.length)) {
+    if (card.effect !== '13th-talisman' && !this.hand.length) {
       return;
     }
     if (!['revelation', 'future-vision'].includes(card.effect)) {
@@ -379,9 +380,7 @@ export default class GameState {
         await this.playBenedictionUseAnimation(card);
         hideElement(this.maledictionEl);
         this.discardCard(this.currentMalediction);
-        await sleep(300);
-        this.discardCardFrom(card, this.benedictionHand);
-        this.drawBenediction();
+        await sleep(DRAW_ANIMATION_MS);
         break;
       case 'future-vision':
         const cards = this.displayPilePreview();
@@ -395,7 +394,7 @@ export default class GameState {
         if (chosenKeptCard instanceof TreasureCard) {
           this.addCardToHand(chosenKeptCard);
         } else {
-          this.replaceBenediction(card);
+          await this.replaceBenediction(card);
           await sleep(800);
           this.displayMalediction(chosenKeptCard);
           return;
@@ -410,12 +409,16 @@ export default class GameState {
         await sleep(800);
         break;
     }
-    this.replaceBenediction(card);
+    await this.replaceBenediction(card);
   }
 
-  replaceBenediction(card: BenedictionCard) {
+  async replaceBenediction(card: BenedictionCard) {
     this.discardCardFrom(card, this.benedictionHand);
     this.drawBenediction();
+    if (this.benedictionHand.indexOf('empty') !== -1 && this.benedictionCredit > 0) {
+      await sleep(DRAW_ANIMATION_MS);
+      this.drawBenediction();
+    }
     this.setActionState(ActionState.draw);
   }
 
@@ -449,7 +452,7 @@ export default class GameState {
   public refreshAll() {
     this.ready = false;
     deathEl.style.transition = 'none';
-    Object.keys(this.cardById).forEach(id => getElementById(id).style.transition = 'none')
+    Object.keys(this.cardById).forEach((id) => (getElementById(id).style.transition = 'none'));
     this.pile.forEach((id, index) => {
       this.cardById[id].pos = positions.pile();
       this.updateCard(this.cardById[id], index + 1);
@@ -466,9 +469,9 @@ export default class GameState {
     this.refreshBenedictionHand();
     setTimeout(() => {
       deathEl.style.transition = 'all .8s linear';
-      Object.keys(this.cardById).forEach(id =>
-        getElementById(id).style.transition = 'top 0.8s,left 0.8s,transform 0.2s'
-      )
+      Object.keys(this.cardById).forEach(
+        (id) => (getElementById(id).style.transition = 'top 0.8s,left 0.8s,transform 0.2s'),
+      );
     }, 100);
     this.ready = true;
   }
@@ -477,7 +480,7 @@ export default class GameState {
     const credits = getElementById('credits');
     credits.style.opacity = '1';
     for (let i = 0; i < 5; i++) {
-      getElementById('c' + i).classList.toggle('active', this.benedictionCredit > i)
+      getElementById('c' + i).classList.toggle('active', this.benedictionCredit > i);
     }
   }
 

@@ -21,11 +21,13 @@ mute.addEventListener('click', async (event: MouseEvent) => {
   localStorage.setItem('adb-mute', off ? 'off' : 'on');
   Audio.getInstance().updateVolume();
 });
-buttonEl.addEventListener('click', () => state ? play() : start());
+buttonEl.addEventListener('click', () => {
+  buttonEl.blur();
+  state ? play() : start();
+});
 getElementById('play-malediction').addEventListener('click', () => state.playMalediction());
 
 async function start() {
-  buttonEl.blur();
   hideElement(popupEl);
   Audio.getInstance().initAudioContext();
   mute.style.display = 'block';
@@ -62,6 +64,6 @@ async function play(): Promise<any> {
     } else {
       end(state, res === 1);
     }
-  }
+  };
   gameloop();
 }

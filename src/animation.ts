@@ -67,8 +67,8 @@ export async function playIntroAnimation() {
   ]);
 
   await playDialog(ghostLabel, [
-    ["I had Bob's barbecue at 1pm...\n", 1000],
-    ["And the Laker's finals on the 13th...\n", 1000],
+    ["I had Bob's barbecue at 1pm…\n", 1000],
+    ["And the Laker's finals on the 13th…\n", 1000],
     ["I can't die now!", 1000],
   ]);
   deathEl.style.right = `25%`;
@@ -81,10 +81,10 @@ export async function playIntroAnimation() {
     ['What is it this time?\n', 1500],
   ]);
 
-  await playDialog(ghostLabel, [[`I died ${randomDeath}...`, 1500]]);
+  await playDialog(ghostLabel, [[`I died ${randomDeath}…`, 1500]]);
   await playDialog(deathLabel, [
     ['*chuckles*\n', 500],
-    ['I see...\n', 1500],
+    ['I see…\n', 1500],
     ["Well, let's go! I got things to do!", 1500],
   ]);
   deathEl.style.animationName = 'flippedFloat';
@@ -251,7 +251,7 @@ export async function playBadEndingAnimation(state: GameState) {
   await initStop(state);
   await initEndScene();
   await playDialog(deathLabel, [
-    ['Well ...\n', 1000],
+    ['Well…\n', 1000],
     ["Looks like luck wasn't on your side this time.\n", 2000],
   ]);
 
@@ -285,7 +285,7 @@ export async function playGoodEndingAnimation(state: GameState) {
     ["Take that you stupid death!\n", 2500],
   ]);
   await playDialog(ghostLabel, [
-    ["Ummmh ... Sorry.\n", 1000],
+    ["Ummmh … Sorry.\n", 1000],
     ["I mean I won your game can I go back now?\n", 2500],
   ]);
 

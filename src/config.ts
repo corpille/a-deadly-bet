@@ -1,19 +1,21 @@
-export const rem = (nb: number) => Math.round(maxWidth() / 100 * 0.833333) * nb;
+export const rem = (nb: number) => Math.round((maxWidth() / 100) * 0.833333) * nb;
 export const maxHeight = () => window.innerHeight;
 export const maxWidth = () => window.innerWidth;
 export const cardHeight = () => rem(15);
 export const cardWidth = () => cardHeight() * 0.65;
-
 
 export const INITIAL_DRAW = 3;
 export const DRAW_ANIMATION_MS = 200;
 export const NB_BENEDICTION_CARD = 2;
 
 export const positions = {
-  pile: () => ({ top: rem(6), left: rem(1) }),
-  benedictionPile: () => ({ top: rem(6), left: rem(1) + (cardWidth() + rem(1)) }),
-  discard: () => ({ top: rem(6), left: rem(1) + (cardWidth() + rem(1)) * 2 }),
-  hand: (index: number) => ({ top: maxHeight() - cardHeight() - rem(1), left: rem(1) + (cardWidth() + rem(1)) * index }),
+  pile: () => ({ top: rem(1), left: rem(7) }),
+  benedictionPile: () => ({ top: rem(1), left: rem(7) + (cardWidth() + rem(1)) }),
+  discard: () => ({ top: rem(1), left: rem(7) + (cardWidth() + rem(1)) * 2 }),
+  hand: (index: number) => ({
+    top: maxHeight() - cardHeight() - rem(1),
+    left: rem(7) + (cardWidth() + rem(1)) * index,
+  }),
   benedictionHand: (index: number) => ({
     top: maxHeight() - cardHeight() - rem(1),
     left: maxWidth() - (cardWidth() + rem(1)) * (NB_BENEDICTION_CARD - index),
@@ -87,5 +89,10 @@ export const benedictions = [
     effect: 'second-wind',
     weight: 1,
   },
-  { name: '13th taslisman', desc: 'Cancel a malediction card or discard to gain 2 credit', effect: '13th-talisman', weight: 4 },
+  {
+    name: '13th taslisman',
+    desc: 'Cancel a malediction card or discard to gain 2 credit',
+    effect: '13th-talisman',
+    weight: 4,
+  },
 ];

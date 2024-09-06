@@ -22,15 +22,17 @@ const deaths = [
   'crushed by a pile of my collectioned snow globes',
 ];
 
-
 function setGhostLabelPosition() {
   ghostLabel.style.left = `${ghostEl.offsetLeft + ghostEl.clientWidth / 2 - ghostLabel.clientWidth / 2}px`;
   ghostLabel.style.bottom = '31.25rem';
   ghostLabel.classList.add('br');
 }
 function setDeathLabelPosition() {
+  deathLabel.style.right = 'auto';
+  deathLabel.style.top = 'auto';
   deathLabel.style.left = `${deathEl.offsetLeft + deathEl.clientWidth / 3 - deathLabel.clientWidth / 2}px`;
   deathLabel.style.bottom = '31.25rem';
+  deathLabel.classList.remove('rt');
   deathLabel.classList.add('bl');
 }
 
@@ -161,8 +163,8 @@ export async function playTutorialBegining() {
 export async function playPilePresentation() {
   await playDialog(deathLabel, [
     ["The left one is filled with 4 set of cards up to 6, and you're going to empty it.\n", 2000],
-    ["The right one is a pile of benedictions cards.\n", 2000],
-    ["Your goal is to empty the left pile.\n", 3000],
+    ['The right one is a pile of benedictions cards.\n', 2000],
+    ['Your goal is to empty the left pile.\n', 3000],
   ]);
   await playDialog(deathLabel, [
     ['But without your hand total ever reaching 13 or above.\n', 1000],
@@ -186,17 +188,15 @@ export async function playBenedictionHandPresentation() {
     ["Boy! I'm really feeling generous today!\n", 2500],
   ]);
   await playDialog(deathLabel, [
-    ["Benediction rules are simple.\n", 2000],
-    ["Each green card discarded give you 1 credit.\n", 2000],
-    ["Each red card discarded nothing.\n", 3000],
+    ['Benediction rules are simple.\n', 2000],
+    ['Each green card discarded give you 1 credit.\n', 2000],
+    ['Each red card discarded nothing.\n', 3000],
   ]);
   await playDialog(deathLabel, [
-    ["If you bring a card to 0 or under you gain 1 extra credit\n", 2000],
-    ["If you have enough credits, cards will be automatically drawn\n", 4000],
+    ['If you bring a card to 0 or under you gain 1 extra credit\n', 2000],
+    ['If you have enough credits, cards will be automatically drawn\n', 4000],
   ]);
-  await playDialog(deathLabel, [
-    ["Alright let's see how you do!\n", 2500],
-  ]);
+  await playDialog(deathLabel, [["Alright let's see how you do!\n", 2500]]);
 }
 
 export function repositionAllElements(complete: boolean = false) {
@@ -243,8 +243,8 @@ async function initEndScene() {
   deathEl.style.right = `25%`;
   ghostEl.style.left = `calc(32% - (13rem / 2) - 1rem)`;
   await sleep(800);
-  setDeathLabelPosition();
   setGhostLabelPosition();
+  setDeathLabelPosition();
 }
 
 export async function playBadEndingAnimation(state: GameState) {
@@ -256,12 +256,12 @@ export async function playBadEndingAnimation(state: GameState) {
   ]);
 
   await playDialog(deathLabel, [
-    ["he ", 500],
-    ["he ", 500],
-    ["he ", 500],
-    ["he ", 500],
-    ["he\n", 500],
-    ["*cough*\n", 500],
+    ['he ', 500],
+    ['he ', 500],
+    ['he ', 500],
+    ['he ', 500],
+    ['he\n', 500],
+    ['*cough*\n', 500],
     ["Alright, let's go then !\n", 1000],
     ["We're going to find you a nice and cozy place in hell for you!\n", 2000],
   ]);
@@ -275,14 +275,12 @@ export async function playBadEndingAnimation(state: GameState) {
   repositionAllElements(true);
 }
 
-
-
 export async function playGoodEndingAnimation(state: GameState) {
   await initStop(state);
   await initEndScene();
   await playDialog(ghostLabel, [
     ["Let's goooooo!!!!\n", 1000],
-    ["Take that you stupid death!\n", 2500],
+    ['Take that you stupid death!\n', 2500],
   ]);
   await playDialog(ghostLabel, [
     ["Ummmh … Sorry.\n", 1000],
@@ -290,16 +288,12 @@ export async function playGoodEndingAnimation(state: GameState) {
   ]);
 
   await playDialog(deathLabel, [
-    ["*sight*\n", 1000],
+    ['*sight*\n', 1000],
     ["Fine, you get 13 more days to live after that I'll be back to reap you !\n", 2000],
   ]);
 
-  await playDialog(ghostLabel, [
-    ['Hell yeah !\n', 1500],
-  ]);
-  await playDialog(deathLabel, [
-    ["Hurry up I don't have all day!\n", 2000],
-  ]);
+  await playDialog(ghostLabel, [['Hell yeah !\n', 1500]]);
+  await playDialog(deathLabel, [["Hurry up I don't have all day!\n", 2000]]);
   await leave();
 
   repositionAllElements(true);

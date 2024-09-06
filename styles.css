@@ -1,5 +1,5 @@
 :root {
-  --bg: #101b26; /*#342840;*/
+  --bg: #101b26;
   --red: #802b38;
   --green: #8db962;
   --gold: #9b7d4b;
@@ -230,9 +230,9 @@ h1 {
 
 #card-remaining {
   position: absolute;
-  top: 22rem;
+  top: 18rem;
   width: 9.75rem;
-  left: 1rem;
+  left: 7rem;
   text-align: center;
   font-size: 1rem;
   opacity: 0;
@@ -433,21 +433,88 @@ h1 {
   margin-top: 20%;
 }
 
+#sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 6rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.8s;
+}
+
+#sidebar.active {
+  background-color: #08111b;
+}
+
+#sidebar.active #gradient {
+  opacity: 1;
+}
+
+#gradient {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    #802b38 7.69%,
+    #85393b 7.69% 15.38%,
+    #89463e 15.38% 23.07%,
+    #8e5442 23.07% 30.78%,
+    #926245 30.78% 38.46%,
+    #976f48 38.46% 46.15%,
+    #9b7d4b 46.15% 53.84%,
+    #99874f 53.84% 61.54%,
+    #969153 61.54% 69.23%,
+    #949b57 69.23% 76.92%,
+    #92a55a 76.92% 84.61%,
+    #8faf5e 84.61% 92.3%,
+    #8db962 92.3% 100%
+  );
+  overflow: hidden;
+  transition: all 0.8s;
+}
+
+#gradient::after {
+  content: '13';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100% / 13);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+#index {
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: height 0.3s;
+  background: #02090f;
+}
+
 #mute {
   background: transparent;
-  position: fixed;
   display: none;
   z-index: 9999;
-  top: 1rem;
-  left: 1rem;
   height: 4rem;
   width: 4rem;
-  margin: 0;
+  margin: 0 0 1rem 0;
   border-radius: 50%;
   background-image: url('/assets/sound.webp');
   background-size: 200% 100%;
   background-position: 0%;
   border: none;
+  flex-shrink: 0;
 }
 
 #mute.off {
@@ -457,7 +524,6 @@ h1 {
 #mute:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
 #credits {
   position: absolute;
   right: 1.3rem;
@@ -487,7 +553,7 @@ h1 {
   width: 0.5rem;
   background-color: inherit;
 }
-#credits >  div:after {
+#credits > div:after {
   content: '';
   position: absolute;
   display: block;

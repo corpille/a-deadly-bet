@@ -323,7 +323,7 @@ export default class GameState {
       case 'false-hope':
         if (randomHandIndex === -1 || !this.hand[randomHandIndex]) return;
         this.discardCardFrom(this.cardById[this.hand[randomHandIndex]], this.hand);
-        this.drawPile();
+        this.drawPile({}, true);
         break;
       case 'destiny-fracture':
         if (randomHandIndex === -1) return;
@@ -351,8 +351,11 @@ export default class GameState {
   }
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
-    if (['second-wind'].includes(card.effect)) return;
-    if (card.effect !== '13th-talisman' && !this.hand.length) {
+    if (card.effect === 'second-wind') return;
+
+    const usableHandIds = this.hand.filter(id => !this.cardById[id].locked);
+
+    if (card.effect !== '13th-talisman' && !usableHandIds.length) {
       return;
     }
     if (!['revelation', 'future-vision'].includes(card.effect)) {

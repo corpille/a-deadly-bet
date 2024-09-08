@@ -330,7 +330,7 @@ h1 {
 .card.b .front label {
   color: var(--green);
 }
-.card.t .front p {
+.card.tb .front p,.card.tm .front p {
   font-size: 1.5rem;
 }
 
@@ -383,13 +383,17 @@ h1 {
 
 #instruction {
   position: absolute;
-  top: 1rem;
+  top: 0;
   width: 30rem;
   left: calc(50% - (30rem / 2));
   text-align: center;
   font-size: 2rem;
   opacity: 0;
   transition: opacity 0.3s;
+  padding: 1rem;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  background-color: #08111b;
 }
 
 #malediction {

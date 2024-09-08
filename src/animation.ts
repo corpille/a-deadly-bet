@@ -60,7 +60,7 @@ export async function playIntroAnimation() {
 
   await playDialog(ghostLabel, [
     ["I had Bob's barbecue at 1pm…\n", 1000],
-    ["And the Laker's finals on the 13th…\n", 1000],
+    ["And the Lakers' finals on the 13th…\n", 1000],
     ["I can't die now!", 1000],
   ]);
   deathEl.style.right = `25%`;
@@ -179,8 +179,8 @@ export async function playBenedictionHandPresentation() {
   ]);
   await playDialog(deathLabel, [
     ['Benediction rules are simple.\n', 2000],
-    ['Each green card discarded gives you 1 credit.\n', 2000],
-    ['Each red card discarded nothing.', 3000],
+    ["For each green treasure card discarded you'll get 1 credit.\n", 2000],
+    ['For each red treasure card discarded you get nothing.', 3000],
   ]);
   await playDialog(deathLabel, [
     ['If you bring a card to 0 or under, you gain 1 extra credit.\n', 2000],
@@ -204,6 +204,7 @@ export function repositionAllElements(complete: boolean = false) {
     deathEl.style.transition = 'none';
     deathEl.style.right = 'calc(-20rem * var(--scytheRatio))';
     deathEl.style.bottom = '2rem';
+    deathEl.style.animationName = 'float';
   }
 }
 
@@ -254,7 +255,7 @@ export async function playBadEndingAnimation(state: GameState) {
     ['he\n', 500],
     ['*cough*\n', 500],
     ["Alright, let's move on to your next life!\n", 1000],
-    ["We're going to find you a nice and cozy place in hell for you!", 2000],
+    ["We're going to find you a nice and cozy place in Hell for you!", 2000],
   ]);
 
   await playDialog(ghostLabel, [
@@ -279,7 +280,7 @@ export async function playGoodEndingAnimation(state: GameState) {
   ]);
 
   await playDialog(deathLabel, [
-    ['*sight*\n', 1000],
+    ['*sigh*\n', 1000],
     ["Fine, you get 13 more days to live after that I'll be back to reap you!", 2000],
   ]);
 

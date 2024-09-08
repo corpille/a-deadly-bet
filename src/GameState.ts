@@ -277,6 +277,7 @@ export default class GameState {
     if (this.action == ActionState.discard) {
       this.nbCardToAction--;
     }
+    this.setActionState(ActionState.draw);
     this.refreshInterface();
   }
 
@@ -356,7 +357,7 @@ export default class GameState {
 
     const usableHandIds = this.hand.filter(id => !this.cardById[id].locked);
 
-    if (card.effect !== '13th-talisman' && !usableHandIds.length) {
+    if (!['13th-talisman', 'future-vision'].includes(card.effect) && !usableHandIds.length) {
       return;
     }
     if (!['revelation', 'future-vision'].includes(card.effect)) {
@@ -430,6 +431,7 @@ export default class GameState {
         break;
     }
     await this.replaceBenediction(card);
+    this.setActionState(ActionState.draw);
   }
 
   async replaceBenediction(card: BenedictionCard) {
@@ -615,6 +617,7 @@ export default class GameState {
   public setActionState(state: ActionState, nbCard: number = 1): void {
     this.nbCardToAction = nbCard;
     this.action = state;
+    this.refreshInterface()
   }
 
   public getSum(noHidden: boolean = false): number {

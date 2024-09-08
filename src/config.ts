@@ -77,12 +77,6 @@ export const benedictions = [
     effect: 'future-vision',
     weight: 2,
   },
-  // {
-  //   name: 'Revelation',
-  //   desc: 'Reveal a hidden card in you hand and lower it by 2. If it reaches 0, the card is discarded',
-  //   effect: 'revelation',
-  //   weight: 5,
-  // },
   {
     name: 'Second wind',
     desc: 'Shield you from loosing but remove all of your cards',
@@ -91,8 +85,20 @@ export const benedictions = [
   },
   {
     name: '13th taslisman',
-    desc: 'Cancel a malediction card or discard to gain 2 credit',
+    desc: 'Cancel a malediction card or discard to gain 2 credits',
     effect: '13th-talisman',
     weight: 4,
   },
+];
+
+export const deaths = [
+  'while swallowing a watermelon',
+  'opening a can of tuna',
+  'falling from a bench',
+  'getting hit by a turtoise shell',
+  'while attempting to ride a snail',
+  'trying to obtain the world record for the longest wedgy',
+  'protesting helmet regulation',
+  'falling into a giant bowl of jello',
+  'crushed by a pile of my collectioned snow globes',
 ];

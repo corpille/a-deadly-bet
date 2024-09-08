@@ -1,7 +1,7 @@
 import { sleep, playDialog, getRandomIndex, getElementById } from './utils';
 import Audio, { chords, loopLength, melody } from './audio';
 import GameState from './GameState';
-import { cardHeight, cardWidth } from './config';
+import { cardHeight, cardWidth, deaths } from './config';
 
 export const deathEl = getElementById('death');
 const floorEl = getElementById('floor');
@@ -9,24 +9,14 @@ const ghostEl = getElementById('ghost');
 export const skipEl = getElementById('skip');
 export const ghostLabel = getElementById('label1');
 export const deathLabel = getElementById('label2');
-
-const deaths = [
-  'while swallowing a watermelon',
-  'opening a can of tuna',
-  'falling from a bench',
-  'getting hit by a turtoise shell',
-  'while attempting to ride a snail',
-  'trying to obtain the world record for the longest wedgy',
-  'protesting helmet regulation',
-  'falling into a giant bowl of jello',
-  'crushed by a pile of my collectioned snow globes',
-];
+export const sidebarEl = getElementById('sidebar');
 
 function setGhostLabelPosition() {
   ghostLabel.style.left = `${ghostEl.offsetLeft + ghostEl.clientWidth / 2 - ghostLabel.clientWidth / 2}px`;
   ghostLabel.style.bottom = '31.25rem';
   ghostLabel.classList.add('br');
 }
+
 function setDeathLabelPosition() {
   deathLabel.style.right = 'auto';
   deathLabel.style.top = 'auto';
@@ -80,7 +70,7 @@ export async function playIntroAnimation() {
   await playDialog(deathLabel, [
     ['Welp! What do we have here?\n', 600],
     ["Another stupid death I'm guessing?\n", 600],
-    ['What is it this time?\n', 1500],
+    ['What is it this time?', 1500],
   ]);
 
   await playDialog(ghostLabel, [[`I died ${randomDeath}…`, 1500]]);
@@ -93,7 +83,7 @@ export async function playIntroAnimation() {
   deathEl.style.right = `5%`;
   await sleep(500);
 
-  await playDialog(ghostLabel, [['Ghost: Wait!\n', 1000]]);
+  await playDialog(ghostLabel, [['Wait!', 1000]]);
   deathEl.style.animationName = 'float';
   await sleep(200);
   deathEl.style.right = `25%`;
@@ -103,20 +93,20 @@ export async function playIntroAnimation() {
     ["I got to go back! I can't die now.\n", 1000],
     ['I got important things to do!', 1500],
   ]);
-  await playDialog(deathLabel, [["That's not how it works buddy, you don't get to choose.\n", 1000]]);
-  await playDialog(ghostLabel, [["Can't you give me another chance ?\n", 2000]]);
+  await playDialog(deathLabel, [["That's not how it works buddy, you don't get to choose.", 1000]]);
+  await playDialog(ghostLabel, [["Can't you give me another chance?", 2000]]);
   await playDialog(deathLabel, [
     ['.', 300],
     ['.', 300],
     ['.', 1500],
   ]);
   await playDialog(deathLabel, [
-    [" Ok, let's try something !\n", 1000],
-    ["If you can win a game of my chosing I'll give you some more time.\n", 1000],
-    ['Deal ?\n', 1000],
+    ["Ok, let's try something!\n", 1000],
+    ["If you can win a game of my choosing I'll give you some more time.\n", 1000],
+    ['Deal?', 1000],
   ]);
   await playDialog(ghostLabel, [['Absolutely! Deal!', 1500]]);
-  await playDialog(deathLabel, [["*smirks* Let's go then !", 1500]]);
+  await playDialog(deathLabel, [["*smirks* Ok, let's go then!", 1500]]);
   deathEl.style.animationName = 'flippedFloat';
   deathEl.style.right = `-31.25rem`;
   ghostEl.style.transition = 'all 1.4s linear';
@@ -156,28 +146,28 @@ export async function playTutorialBegining() {
   deathLabel.style.left = 'auto';
   await playDialog(deathLabel, [
     ["Alright! Here's the game!\n", 1000],
-    ['You see these 2 piles over there!\n', 1000],
+    ['You see these 2 piles over there!', 1000],
   ]);
 }
 
 export async function playPilePresentation() {
   await playDialog(deathLabel, [
-    ["The left one is filled with 4 set of cards up to 6, and you're going to empty it.\n", 2000],
+    ["The left one is filled with 4 sets of cards up to 6, and you're going to empty it.\n", 2000],
     ['The right one is a pile of benedictions cards.\n', 2000],
-    ['Your goal is to empty the left pile.\n', 3000],
+    ['Your goal is to empty the left pile.', 3000],
   ]);
   await playDialog(deathLabel, [
     ['But without your hand total ever reaching 13 or above.\n', 1000],
-    ['Seems fair right ?', 2000],
+    ['Seems fair right?', 2000],
   ]);
 }
 
 export async function playHandPresentation() {
   await playDialog(deathLabel, [
-    ['Oh did I mention I added some specials malediction cards in here to spice things up ?\n', 2000],
+    ['Oh did I mention I added some special malediction cards in here to spice things up?', 2000],
   ]);
   await playDialog(deathLabel, [
-    ["What ? It's undoable ?\n", 1000],
+    ["What ? It's undoable?\n", 1000],
     ['Alright! Here!', 1500],
   ]);
 }
@@ -185,18 +175,18 @@ export async function playHandPresentation() {
 export async function playBenedictionHandPresentation() {
   await playDialog(deathLabel, [
     ["I'll give you 2 benediction cards and 1 extra credit.\n", 1500],
-    ["Boy! I'm really feeling generous today!\n", 2500],
+    ["Boy! I'm really feeling generous today!", 2500],
   ]);
   await playDialog(deathLabel, [
     ['Benediction rules are simple.\n', 2000],
-    ['Each green card discarded give you 1 credit.\n', 2000],
-    ['Each red card discarded nothing.\n', 3000],
+    ['Each green card discarded gives you 1 credit.\n', 2000],
+    ['Each red card discarded nothing.', 3000],
   ]);
   await playDialog(deathLabel, [
-    ['If you bring a card to 0 or under you gain 1 extra credit\n', 2000],
-    ['If you have enough credits, cards will be automatically drawn\n', 4000],
+    ['If you bring a card to 0 or under, you gain 1 extra credit.\n', 2000],
+    ['If you have enough credits, cards will be automatically drawn.', 4000],
   ]);
-  await playDialog(deathLabel, [["Alright let's see how you do!\n", 2500]]);
+  await playDialog(deathLabel, [["Alright, let's see how you do!", 2500]]);
 }
 
 export function repositionAllElements(complete: boolean = false) {
@@ -233,6 +223,7 @@ async function initStop(state: GameState) {
 }
 
 async function initEndScene() {
+  sidebarEl.classList.remove('active')
   skipEl.style.opacity = '1';
   floorEl.style.opacity = '1';
   floorEl.style.bottom = '0';
@@ -252,7 +243,7 @@ export async function playBadEndingAnimation(state: GameState) {
   await initEndScene();
   await playDialog(deathLabel, [
     ['Well…\n', 1000],
-    ["Looks like luck wasn't on your side this time.\n", 2000],
+    ["Looks like luck wasn't on your side this time.", 2000],
   ]);
 
   await playDialog(deathLabel, [
@@ -262,12 +253,12 @@ export async function playBadEndingAnimation(state: GameState) {
     ['he ', 500],
     ['he\n', 500],
     ['*cough*\n', 500],
-    ["Alright, let's go then !\n", 1000],
-    ["We're going to find you a nice and cozy place in hell for you!\n", 2000],
+    ["Alright, let's move on to your next life!\n", 1000],
+    ["We're going to find you a nice and cozy place in hell for you!", 2000],
   ]);
 
   await playDialog(ghostLabel, [
-    ['Oh man really !\n', 1000],
+    ['Oh man really!\n', 1000],
     ['Well at least I tried!', 2000],
   ]);
   await leave();
@@ -280,20 +271,20 @@ export async function playGoodEndingAnimation(state: GameState) {
   await initEndScene();
   await playDialog(ghostLabel, [
     ["Let's goooooo!!!!\n", 1000],
-    ['Take that you stupid death!\n', 2500],
+    ['Take that, you stupid death!', 2500],
   ]);
   await playDialog(ghostLabel, [
-    ["Ummmh … Sorry.\n", 1000],
-    ["I mean I won your game can I go back now?\n", 2500],
+    ["Ummmh… Sorry.\n", 1000],
+    ["I mean I won your game can I go back now?", 2500],
   ]);
 
   await playDialog(deathLabel, [
     ['*sight*\n', 1000],
-    ["Fine, you get 13 more days to live after that I'll be back to reap you !\n", 2000],
+    ["Fine, you get 13 more days to live after that I'll be back to reap you!", 2000],
   ]);
 
-  await playDialog(ghostLabel, [['Hell yeah !\n', 1500]]);
-  await playDialog(deathLabel, [["Hurry up I don't have all day!\n", 2000]]);
+  await playDialog(ghostLabel, [['Hell yeah!\n', 1500]]);
+  await playDialog(deathLabel, [["Hurry up I don't have all day!", 2000]]);
   await leave();
 
   repositionAllElements(true);

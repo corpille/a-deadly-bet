@@ -8,7 +8,7 @@ const titleEl = querySelector('#popup h1');
 const subTitleEl = querySelector('#popup h3');
 
 export async function checkEndGame(state: GameState): Promise<number> {
-  if (state.getSum() >= 13) {
+  if (state.getSum() >= 13 && !state.currentMalediction) {
     await state.activateLastChance();
     if (state.getSum() >= 13) {
       return -1;
@@ -21,14 +21,14 @@ export async function checkEndGame(state: GameState): Promise<number> {
 
 export async function end(state: GameState, isGoodEnding: boolean) {
   try {
-    // use to skip an async/await function
+    // use to skip async/await function
     await playCancelablePromise(isGoodEnding ? playGoodEndingAnimation : playBadEndingAnimation, state);
   } catch {
     repositionAllElements(true);
   }
   resetCancel();
   titleEl.innerText = isGoodEnding ? 'You get to live another day!' : 'You died!';
-  subTitleEl.innerText = isGoodEnding ? 'For now...' : 'For real this time';
+  subTitleEl.innerText = isGoodEnding ? 'For now…' : 'For real this time';
   buttonEl.innerText = isGoodEnding ? 'Play again' : 'Try again';
   displayElement(popupEl);
 }

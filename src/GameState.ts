@@ -82,6 +82,7 @@ export default class GameState {
     benediction.pos = positions.benedictionPile();
     this.cardById[benediction.id] = benediction;
     this.sidebarEl.classList.add('active');
+    this.indexEl.style.height = '100%';
     this.initCardsVisuals();
   }
 

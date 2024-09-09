@@ -35,7 +35,7 @@ async function start() {
     // use to skip an async/await function
     await playCancelablePromise(playIntroAnimation);
   } catch {
-    repositionAllElements();
+    repositionAllElements(true);
   }
   resetCancel();
   if (Object.keys(Audio.getInstance().intervals).length === 0) {
@@ -51,8 +51,8 @@ async function play(): Promise<any> {
   state = new GameState();
   hideElement(popupEl);
   // First discard
-  state.setActionState(ActionState.discard, INITIAL_DRAW - 2);
-  await waitFor(() => state.nbCardToAction === 0);
+  state.setActionState(ActionState.discard);
+  await waitFor(() => state.discardedPile.length === INITIAL_DRAW - 2);
   state.setActionState(ActionState.draw);
 
   const gameloop = async () => {

@@ -43,7 +43,6 @@ export default class GameState {
   benedictionHand: string[];
   discardedPile: string[];
   action: ActionState;
-  nbCardToAction: number = 0;
   currentMalediction?: MaledictionCard;
   chosenCardId?: string;
   ready: boolean = false;
@@ -68,8 +67,8 @@ export default class GameState {
 
     this.hand = cards.slice(cards.length - INITIAL_DRAW).map((card) => card.id);
 
-    cards.push(...getMaledictionCards());
-    shuffleArray(cards);
+    cards.unshift(...getMaledictionCards());
+    // shuffleArray(cards);
 
     cards.forEach((c) => {
       this.cardById[c.id] = c;
@@ -164,7 +163,6 @@ export default class GameState {
       this.playBenediction(card);
     } else if (this.action === ActionState.choose) {
       this.chosenCardId = card.id;
-      this.nbCardToAction--;
     }
   }
 
@@ -176,7 +174,6 @@ export default class GameState {
     }
     if ([ActionState.choose, ActionState.chooseTreasure].includes(this.action)) {
       this.chosenCardId = card.id;
-      this.nbCardToAction--;
     }
   }
 
@@ -184,9 +181,7 @@ export default class GameState {
 
   private async chooseCard(state: ActionState): Promise<TreasureCard | BenedictionCard> {
     this.setActionState(state);
-    await waitFor(() => {
-      return this.nbCardToAction === 0;
-    });
+    await waitFor(() => !!this.chosenCardId);
     const chosenCard = this.cardById[this.chosenCardId as string] as TreasureCard | BenedictionCard;
     this.chosenCardId = undefined;
     return chosenCard;
@@ -196,7 +191,7 @@ export default class GameState {
     if (this.benedictionCredit === 0) {
       return;
     }
-    this.addBenedictionCredit(-1);
+    //this.addBenedictionCredit(-1);
     this.refreshCredits();
     const card = this.findBenedictionPile();
     const index = this.benedictionHand.indexOf('empty');
@@ -235,11 +230,10 @@ export default class GameState {
     if (!cardId) return;
     const card = this.cardById[cardId];
     card.hidden = options?.hidden ?? false;
-    card.locked = options?.locked ?? false;
     card.inPile = false;
     if (card instanceof TreasureCard) {
+      card.locked = options?.locked ?? false;
       this.addCardToHand(card);
-      this.nbCardToAction--;
     } else if (card instanceof MaledictionCard) {
       this.displayMalediction(card);
     }
@@ -274,10 +268,6 @@ export default class GameState {
     }
     card.inDiscard = true;
     this.updateCard(card, this.discardedPile.length + 1, null);
-    if (this.action == ActionState.discard) {
-      this.nbCardToAction--;
-    }
-    this.setActionState(ActionState.draw);
     this.refreshInterface();
   }
 
@@ -295,9 +285,11 @@ export default class GameState {
 
     this.discardCard(this.currentMalediction);
     hideElement(this.maledictionEl);
+    const effect = this.currentMalediction.effect
     const randomHandIndex = getRandomIndex(this.hand);
+    delete this.currentMalediction;
 
-    switch (this.currentMalediction.effect) {
+    switch (effect) {
       case 'past-weight':
         this.drawPile({ hidden: true }, true);
         break;
@@ -347,9 +339,9 @@ export default class GameState {
         this.addCardToHand(discardedCard);
         break;
     }
-    this.setActionState(ActionState.draw);
-    delete this.currentMalediction;
-    this.nbCardToAction--;
+    if (!this.currentMalediction) {
+      this.setActionState(ActionState.draw);
+    }
   }
 
   private async playBenediction(card: BenedictionCard): Promise<void> {
@@ -385,7 +377,6 @@ export default class GameState {
       case 'lucky-switch':
         const chosenCard = await this.chooseCard(ActionState.choose);
         this.discardCardFrom(chosenCard, chosenCard instanceof TreasureCard ? this.hand : this.benedictionHand);
-        console.log(chosenCard.type);
         if (chosenCard instanceof TreasureCard) {
           this.drawPile({}, true, (id: string) => this.cardById[id].type === chosenCard.type);
         } else {
@@ -445,18 +436,19 @@ export default class GameState {
   }
 
   displayPilePreview(): Card[] {
-    const cards = this.pile.splice(Math.min(this.pile.length - 3, 0), 3).map((id) => {
+    const cards = this.pile.splice(-3).map((id) => {
       const card = this.cardById[id];
       card.pos = positions.center();
       card.hidden = false;
       return card;
     });
     cards[0].pos.left -= cardWidth() + rem(1);
-    cards[2].pos.left += cardWidth() + rem(1);
+    if (cards[2]) {
+      cards[2].pos.left += cardWidth() + rem(1);
+    }
     cards.forEach((card) =>
       this.updateCard(card, 99, () => {
         this.chosenCardId = card.id;
-        this.nbCardToAction--;
       }),
     );
     return cards;
@@ -512,7 +504,7 @@ export default class GameState {
     let text = 'Draw or play a card';
     switch (this.action) {
       case ActionState.discard:
-        text = `Discard ${this.nbCardToAction} card${this.nbCardToAction > 1 ? 's' : ''}`;
+        text = `Discard 1 card`;
         break;
       case ActionState.choose:
         text = `Choose a card in your hand`;
@@ -615,7 +607,6 @@ export default class GameState {
   }
 
   public setActionState(state: ActionState, nbCard: number = 1): void {
-    this.nbCardToAction = nbCard;
     this.action = state;
     this.refreshInterface()
   }

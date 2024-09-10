@@ -116,7 +116,7 @@ export function getRandomBenediction(benedictionHand: string[], cardByid: { [id:
 
 export function getTreasureCards(): Array<TreasureCard> {
   const availableCards: Array<TreasureCard> = [];
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 4; i++) {
     // nb set
     for (let j = 0; j < 6; j++) {
       // max value

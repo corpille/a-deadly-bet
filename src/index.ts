@@ -47,6 +47,7 @@ async function start() {
 }
 
 async function play(): Promise<any> {
+  repositionAllElements(true);
   // init game
   state = new GameState();
   hideElement(popupEl);

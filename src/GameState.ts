@@ -189,14 +189,13 @@ export default class GameState {
   }
 
   private drawBenediction(): void {
-    if (this.benedictionCredit === 0) {
+    const index = this.benedictionHand.indexOf('empty');
+    if (this.benedictionCredit === 0 || index === -1) {
       return;
     }
     this.addBenedictionCredit(-1);
     this.refreshCredits();
     const card = this.findBenedictionPile();
-    const index = this.benedictionHand.indexOf('empty');
-    if (index === -1) return;
     this.benedictionHand.splice(index, 1, card.id);
     card.hidden = false;
     card.pos = positions.benedictionHand(index);
@@ -342,6 +341,7 @@ export default class GameState {
         this.addCardToHand(discardedCard);
         break;
     }
+    this.refillBenediction();
     if (!this.currentMalediction) {
       this.setActionState(ActionState.draw);
     }
@@ -409,7 +409,8 @@ export default class GameState {
         if (chosenKeptCard instanceof TreasureCard) {
           this.addCardToHand(chosenKeptCard);
         } else {
-          await this.replaceBenediction(card);
+          this.discardCardFrom(card, this.benedictionHand);
+          await this.refillBenediction();
           await sleep(600);
           await this.displayMalediction(chosenKeptCard);
           return;
@@ -424,12 +425,12 @@ export default class GameState {
         await sleep(800);
         break;
     }
-    await this.replaceBenediction(card);
+    this.discardCardFrom(card, this.benedictionHand);
+    await this.refillBenediction();
     this.setActionState(ActionState.draw);
   }
 
-  async replaceBenediction(card: BenedictionCard) {
-    this.discardCardFrom(card, this.benedictionHand);
+  async refillBenediction() {
     this.drawBenediction();
     if (this.benedictionHand.indexOf('empty') !== -1 && this.benedictionCredit > 0) {
       await sleep(DRAW_ANIMATION_MS);

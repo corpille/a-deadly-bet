@@ -79,7 +79,7 @@ export const benedictions = [
   },
   {
     name: 'Second wind',
-    desc: 'Shield you from losing but remove all of your cards',
+    desc: 'Shield you from losing but remove all of your cards and credits',
     effect: 'second-wind',
     weight: 1,
   },

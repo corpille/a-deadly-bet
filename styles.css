@@ -202,6 +202,12 @@ html {
   height: 100%;
   width: 100%;
 }
+
+#popup label {
+    position: absolute;
+    bottom: 2rem;
+    font-size: 1.2rem;
+}
 h1 {
   font-size: 4rem;
   text-transform: uppercase;

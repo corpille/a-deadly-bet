@@ -1,6 +1,6 @@
 import { playBadEndingAnimation, playGoodEndingAnimation, repositionAllElements } from './animation';
 import GameState, { ActionState } from './GameState';
-import { displayElement, getElementById, playCancelablePromise, querySelector, resetCancel } from './utils';
+import { displayElement, getElementById, playCancelablePromise, querySelector, resetCancel, sleep } from './utils';
 
 export const popupEl = getElementById('popup');
 export const buttonEl = getElementById('button');
@@ -9,10 +9,12 @@ const subTitleEl = querySelector('#popup h3');
 
 export async function checkEndGame(state: GameState): Promise<number> {
   if (state.pile.length === 0 && !state.currentMalediction && state.action === ActionState.draw) {
+    await sleep(800);
     return 1;
   } else if (state.getSum() >= 13) {
     await state.activateLastChance();
     if (state.getSum() >= 13) {
+      await sleep(800);
       return -1;
     }
   }

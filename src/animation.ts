@@ -174,7 +174,7 @@ export async function playHandPresentation() {
 
 export async function playBenedictionHandPresentation() {
   await playDialog(deathLabel, [
-    ["I'll give you 2 benediction cards and 1 extra credit.\n", 1500],
+    ["I'll give you 2 benediction cards.\n", 1500],
     ["Boy! I'm really feeling generous today!", 2500],
   ]);
   await playDialog(deathLabel, [
@@ -260,7 +260,7 @@ export async function playBadEndingAnimation(state: GameState) {
 
   await playDialog(ghostLabel, [
     ['Oh man really!\n', 1000],
-    ['Well at least I tried!', 2000],
+    ['Well at least I tried I guess…', 2000],
   ]);
   await leave();
 
@@ -272,7 +272,7 @@ export async function playGoodEndingAnimation(state: GameState) {
   await initEndScene();
   await playDialog(ghostLabel, [
     ["Let's goooooo!!!!\n", 1000],
-    ['Take that, you stupid death!', 2500],
+    ['Take that, you stupid Death!', 2500],
   ]);
   await playDialog(ghostLabel, [
     ["Ummmh… Sorry.\n", 1000],
@@ -284,7 +284,7 @@ export async function playGoodEndingAnimation(state: GameState) {
     ["Fine, you get 13 more days to live after that I'll be back to reap you!", 2000],
   ]);
 
-  await playDialog(ghostLabel, [['Hell yeah!\n', 1500]]);
+  await playDialog(ghostLabel, [['Hell yeah!\n', 1000], ['Wait only 13 days…?\n', 2000]]);
   await playDialog(deathLabel, [["Hurry up I don't have all day!", 2000]]);
   await leave();
 

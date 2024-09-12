@@ -43,19 +43,19 @@ export const maledictions = [
 ];
 
 export const benedictions = [
-  { name: 'Evasion', desc: 'Reduce a card value to 0', effect: 'evasion', weight: 4 },
+  { name: 'Evasion', desc: 'Reduce a card value to 0', effect: 'evasion', weight: 3 },
   {
     name: 'Protection I',
     desc: 'Lower a chosen card by 1. If it reaches 0, the card is discarded',
     effect: 'protection',
-    weight: 12,
+    weight: 15,
     val: 1,
   },
   {
     name: 'Protection II',
     desc: 'Lower a chosen card by 2. If it reaches 0, the card is discarded',
     effect: 'protection',
-    weight: 10,
+    weight: 12,
     val: 2,
   },
   {
@@ -69,7 +69,7 @@ export const benedictions = [
     name: 'Lucky switch',
     desc: 'Switch one card from your hand by one of the same type',
     effect: 'lucky-switch',
-    weight: 6,
+    weight: 10,
   },
   {
     name: 'Vision of the future',

@@ -203,6 +203,10 @@ html {
   width: 100%;
 }
 
+#popup h1 span {
+  color: var(--red);
+}
+
 #popup label {
     position: absolute;
     bottom: 2rem;

@@ -152,7 +152,7 @@ export async function playTutorialBegining() {
 
 export async function playPilePresentation() {
   await playDialog(deathLabel, [
-    ["The left one is filled with 4 sets of cards up to 6, and you're going to empty it.\n", 2000],
+    ["The left one is filled with 4 sets of cards up to 6.\n", 2000],
     ['The right one is a pile of benedictions cards.\n', 2000],
     ['Your goal is to empty the left pile.', 3000],
   ]);

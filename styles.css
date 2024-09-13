@@ -205,6 +205,7 @@ html {
 
 #popup h1 span {
   color: var(--red);
+  margin: 0 2rem;
 }
 
 #popup label {
